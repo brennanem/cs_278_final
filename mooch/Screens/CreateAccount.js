@@ -5,10 +5,10 @@ import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-function Login({ navigation }) {
+function CreateAccount({ navigation }) {
     return(
         <View>
-            <Text>log in</Text>
+            <Text>create account</Text>
             <TextInput
             style={styles.input}
             // onChangeText={onChangeEmail} #use this when we build backend 
@@ -17,12 +17,18 @@ function Login({ navigation }) {
             />
             <TextInput
             style={styles.input}
+            // onChangeText={onChangeUsername}  
+            // value={username}
+            placeholder="username"
+            />
+             <TextInput
+            style={styles.input}
             // onChangeText={onChangePassword}
             // value={password}
             placeholder="password"
             secureTextEntry={true}
           />
-            <Button typeof title='login' onPress={() =>
+            <Button typeof title='create account' onPress={() =>
             navigation.navigate('Home')
             }>
             </Button>
@@ -30,7 +36,7 @@ function Login({ navigation }) {
     )
 }
 
-export default Login;
+export default CreateAccount;
 
 
 
@@ -42,15 +48,3 @@ const styles = StyleSheet.create({
       padding: 10,
     },
   });
-
-
-//<View style={styles.container}>
-     //     <Button typeof title='login'></Button>
-     //     <Button typeof title='create account'></Button>
-        {/* <Drawer.Navigator>
-          <Drawer.Screen name='My Friends' component={MyFriends} />
-          <Drawer.Screen name='Profile' component={Profile} />
-        </Drawer.Navigator> */}
-
-    //      <StatusBar style="auto" />
-    //    </View>
