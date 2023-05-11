@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import * as React from 'react';
 
-function formals({ navigation }) {
+function Formals({ navigation }) {
     return(
         <View>
             <Text>formals placeholder file</Text>
@@ -10,4 +10,4 @@ function formals({ navigation }) {
     )
 }
 
-export default formals;
+export default Formals;

@@ -3,19 +3,18 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 import * as React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
-import formals from './formals';
-import aphi from './aphi';
+import Formals from './Formals';
+import Aphi from './Aphi';
+import ExplorePage from './ExplorePage';
 
 function Explore({ navigation }) {
     const Drawer = createDrawerNavigator();
     return(
-    // <View>
-    //     <Text>explore</Text>
-    // </View>
         <NavigationContainer independent={true}>
             <Drawer.Navigator>
-            <Drawer.Screen name="aphi" component={aphi} />
-            <Drawer.Screen name="formals" component={formals} />
+            <Drawer.Screen name="explore" component={ExplorePage} />
+            <Drawer.Screen name="aphi" component={Aphi} />
+            <Drawer.Screen name="formals" component={Formals} />
         </Drawer.Navigator>
       </NavigationContainer>
     )

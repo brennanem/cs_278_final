@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, TextInput, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, TextInput, View, SafeAreaView } from 'react-native';
+import { Button } from 'react-native-elements';
 import * as React from 'react';
 //import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
@@ -28,10 +29,11 @@ function CreateAccount({ navigation }) {
             placeholder="password"
             secureTextEntry={true}
           />
-            <Button typeof title='create account' onPress={() =>
+            <Button
+            buttonStyle = {styles.button}
+            title='create account' onPress={() =>
             navigation.navigate('Home')
-            }>
-            </Button>
+            }/>
         </View>
     )
 }
@@ -47,4 +49,13 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       padding: 10,
     },
+
+  button: {
+      backgroundColor: '#ffb6c1',
+      borderColor: '#f5dceb',
+      marginBottom: 20,
+      borderWidth: 0,
+      borderRadius: 15,       
+      justifyContent: 'center'
+   }
   });
