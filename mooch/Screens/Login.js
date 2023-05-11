@@ -9,6 +9,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 function Login({ navigation }) {
     return(
         <View>
+          
             <Text>log in</Text>
             <TextInput
             style={styles.input}
@@ -23,8 +24,9 @@ function Login({ navigation }) {
             placeholder="password"
             secureTextEntry={true}
           />
-            <Button 
+            <Button
             buttonStyle= {styles.button}
+            titleStyle={styles.buttonText}
             title='login' onPress={() =>
             navigation.navigate('Home')
             }/>
@@ -44,12 +46,18 @@ const styles = StyleSheet.create({
       padding: 10,
     },
     button: {
-      backgroundColor: '#ffb6c1',
+      backgroundColor:  '#e8def9', 
       borderColor: '#f5dceb',
       marginBottom: 20,
       borderWidth: 0,
       borderRadius: 15,       
       justifyContent: 'center'
+   },
+   buttonText: {
+    color:'#5A5A5A', 
+   },
+   background: {
+      backgroundColor: 'white' //not sure about this
    }
   });
 
