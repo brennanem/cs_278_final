@@ -31,6 +31,7 @@ function CreateAccount({ navigation }) {
           />
             <Button
             buttonStyle = {styles.button}
+            titleStyle = {styles.buttonText}
             title='create account' onPress={() =>
             navigation.navigate('Home')
             }/>
@@ -42,20 +43,26 @@ export default CreateAccount;
 
 
 
-const styles = StyleSheet.create({
-    input: {
-      height: 40,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
-    },
 
+const styles = StyleSheet.create({
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
   button: {
-      backgroundColor: '#ffb6c1',
-      borderColor: '#f5dceb',
-      marginBottom: 20,
-      borderWidth: 0,
-      borderRadius: 15,       
-      justifyContent: 'center'
-   }
-  });
+    backgroundColor:  '#e8def9', 
+    borderColor: '#f5dceb',
+    marginBottom: 20,
+    borderWidth: 0,
+    borderRadius: 15,       
+    justifyContent: 'center'
+ },
+ buttonText: {
+  color:'#5A5A5A', 
+ },
+ background: {
+    backgroundColor: 'white' //not sure about this
+ }
+});
