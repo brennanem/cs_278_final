@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View , Image} from 'react-native';
+import { Button, StyleSheet, Text, View , Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
 import * as React from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
 
@@ -75,24 +75,6 @@ const clothes = [
 ];
 
 
-{/* <View key={item.id} style={[{marginTop: 12, flex: 1}, style]}> */}
-
-// const getRandomNumber = () => {
-//     const randomNumber = Math.floor(Math.random() * 100) + 1;
-//     setNumber(randomNumber);
-// }
-
-// const randomBool = useMemo(() => Math.random() < 0.5, []);
-
-{/* <Image
-source={item.source}
-style={{
-  height: randomBool ? 150 : 280,
-  alignSelf: 'stretch',
-}}
-resizeMode="cover"
-/> */}
-
 const Item = ({item}) => (
     <View key={item.id} style={{marginTop: 12, flex: 1}}>
       <Image
@@ -127,15 +109,72 @@ function ExplorePage({ navigation }) {
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={<View />}
             contentContainerStyle={{
-              paddingHorizontal: 24,
-              alignSelf: 'stretch',
+            paddingHorizontal: 24,
+            alignSelf: 'stretch',
             }}
-        />        
+        />
     )
 }
 
 
 export default ExplorePage;
+
+{/* <TouchableOpacity activeOpacity={0.5}>
+<Image
+    ssource={require("./uploadicon.png")}
+/>
+onPress={() => navigation.navigate('Upload')}
+</TouchableOpacity> */}
+
+{/* <Button 
+icon={
+    <Icon
+    name="arrow-right"
+    size={15}
+    color="white"
+    />
+}
+buttonStyle = {{position: 'absolute', bottom:0, left:0}}
+onPress={() => navigation.navigate('Create Account')}
+/> */}
+// return(
+//     <SafeAreaView>
+//         <FlatList
+//         data={DATA}
+//         renderItem={({item}) => <Item title={item.title} />}
+//         keyExtractor={item => item.id}
+//         />
+//         <MasonryList
+//             data={clothes}
+//             renderItem={({item}) => <Item item={item} />}
+//             keyExtractor={item => item.id}
+//             numColumns={2}
+//             showsVerticalScrollIndicator={false}
+//             ListHeaderComponent={<View />}
+//             contentContainerStyle={{
+//             paddingHorizontal: 24,
+//             alignSelf: 'stretch',
+//             }}
+//         />   
+//     </SafeAreaView>     
+
+{/* <View key={item.id} style={[{marginTop: 12, flex: 1}, style]}> */}
+
+// const getRandomNumber = () => {
+//     const randomNumber = Math.floor(Math.random() * 100) + 1;
+//     setNumber(randomNumber);
+// }
+
+// const randomBool = useMemo(() => Math.random() < 0.5, []);
+
+{/* <Image
+source={item.source}
+style={{
+  height: randomBool ? 150 : 280,
+  alignSelf: 'stretch',
+}}
+resizeMode="cover"
+/> */}
 
 // const light = {
 //     background: '#FFFFFF',
@@ -223,45 +262,4 @@ export default ExplorePage;
 //     </View>
 // )
 
-// function ExplorePage({ navigation }) {
-//     return(
-//         <View>
-//             <Text>ExplorePage.js is the place where we should edit the explore page (for now) to get the drawers to work</Text>
-//         </View>
-//     )
-// }
-
-// export default ExplorePage;
-
-// const clothes = [
-//     { source: require("../clothes_images/pinkpants.jpeg"),
-//         width: 1080,
-//         height: 1900 },
-//     { source: require("../clothes_images/greenset.jpeg"),
-//         width: 1080,
-//         height: 1920 },
-//     { source: require("../clothes_images/blueoneshouldertop.jpeg"),
-//         width: 1080,
-//         height: 1950 },
-//     { source: require("../clothes_images/chainmailtop.jpeg"),
-//         width: 1080,
-//         height: 1950 },
-//     { source: require("../clothes_images/greendress.jpeg"),
-//         width: 1080,
-//         height: 1930 },
-//     { source: require("../clothes_images/redscarftop.jpeg"),
-//         width: 1080,
-//         height: 1910 },
-//     { source: require("../clothes_images/swirltop.jpeg"),
-//         width: 1080,
-//         height: 1920 },
-//     { source: require("../clothes_images/yellowbralette.jpeg"),
-//         width: 1080,
-//         height: 1900 },
-//     { source: require("../clothes_images/denimtop.jpeg"),
-//         width: 1080,
-//         height: 1920 },
-//     { source: require("../clothes_images/blackstrappydress.jpeg"),
-//         width: 1080,
-//         height: 1920 }
-// ];
+//
