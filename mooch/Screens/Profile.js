@@ -73,7 +73,7 @@ function Profile({ navigation }) {
             </View>
           </View>
         </View>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView>
             <View style={styles.closetContainer}>
                 <Text style={styles.closetHeader}>My Closet</Text>
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
