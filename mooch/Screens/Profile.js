@@ -7,23 +7,18 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 const allClothes = [
     { source: require("../clothes_images/yellowbralette.jpeg"),
-        width: 160,
-        height: 250,
         id: '8',
-        i: 7,
         text: 'FreePeople (S)' },
     { source: require("../clothes_images/denimtop.jpeg"),
-        width: 160,
-        height: 210,
         id: '9',
-        i: 8,
         text: 'Amazon (S)' },
     { source: require("../clothes_images/blackstrappydress.jpeg"),
-        width: 160,
-        height: 200,
         id: '10',
-        i: 9,
-        text: 'TigerMist (S)' }
+        text: 'TigerMist (S)' }, 
+    { source: require("../clothes_images/pinkscarftop.jpeg"),
+        id: '11',
+        text: 'TigerMist (S)' }, 
+
 ];
 
 const beingBorrowed = [
@@ -59,12 +54,12 @@ function Profile({ navigation }) {
             <Text style={styles.name}>Brennan Megregian</Text>
             <View style={styles.statsContainer}>
               <View style={styles.statsBox}>
-                <Text style={styles.statsCount}>{3}</Text>
+                <Text style={styles.statsCount}>{4}</Text>
                 <Text style={styles.statsLabel}>Items</Text>
               </View>
               <View style={styles.statsBox}>
                 <Text style={styles.statsCount}>{1}</Text>
-                <Text style={styles.statsLabel}>Being Borrowed</Text>
+                <Text style={styles.statsLabel}>Borrowed</Text>
               </View>
               <View style={styles.statsBox}>
                 <Text style={styles.statsCount}>{2}</Text>
@@ -85,7 +80,7 @@ function Profile({ navigation }) {
                 </ScrollView>
             </View>
             <View style={styles.closetContainer}>
-                <Text style={styles.closetHeader}>Being Borrowed</Text>
+                <Text style={styles.closetHeader}>Borrowed</Text>
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 {beingBorrowed.map((item) => (
                     <View key={item.id} style={styles.imageContainer}>

@@ -1,15 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TextInput, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Image, Text, TextInput, View, SafeAreaView } from 'react-native';
 import { Button } from 'react-native-elements';
 import * as React from 'react';
 //import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
+const staticImage = require("./mooch_logo.png");
+
+
 function CreateAccount({ navigation }) {
     return(
-        <View>
-            <Text>create account</Text>
+        <View style={styles.background}>
+             <Image
+             source = {staticImage}
+             style = {{ marginTop: 20, marginBottom: 20, alignSelf: 'center'}}
+             />
             <TextInput
             style={styles.input}
             // onChangeText={onChangeEmail} #use this when we build backend 
@@ -50,6 +56,7 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+    borderRadius: 15
   },
   button: {
     backgroundColor:  '#e8def9', 
@@ -57,12 +64,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 0,
     borderRadius: 15,       
-    justifyContent: 'center'
+    justifyContent: 'center',
+    margin: 12,
+    padding: 10,
  },
  buttonText: {
   color:'#5A5A5A', 
  },
- background: {
-    backgroundColor: 'white' //not sure about this
+background: {
+  height: '100%',
+  backgroundColor: 'white',
+  justifyContent: 'center'
  }
 });

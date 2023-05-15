@@ -93,7 +93,7 @@ const Item = ({item}) => (
 
 function ExplorePage({ navigation }) {
     return(
-        <SafeAreaView style={styles.Container}>
+        <SafeAreaView style={styles.background}>
             <MasonryList
                 data={clothes}
                 renderItem={({item}) => <Item item={item} />}
@@ -111,6 +111,7 @@ function ExplorePage({ navigation }) {
             icon={{ name: 'add', color: 'white' }}
             color="#e8def9"
             placement="right"
+            onPress={() => navigation.navigate('Upload')}
         />
         </SafeAreaView>
     )
@@ -127,8 +128,9 @@ style={styles.FloatingButtonStyle} />
 
 const styles = StyleSheet.create({
 
-Container: {
+background: {
     flex: 1,
+    backgroundColor: 'white',
 },
 
 TouchableOpacityStyle:{
