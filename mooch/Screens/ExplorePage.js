@@ -2,6 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet, Text, View , Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
 import * as React from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
+import { FAB } from '@rneui/themed';
+
 
 // interface Clothes {
 //     source: string;
@@ -101,23 +103,87 @@ const Item = ({item}) => (
 
 function ExplorePage({ navigation }) {
     return(
-        <MasonryList
-            data={clothes}
-            renderItem={({item}) => <Item item={item} />}
-            keyExtractor={item => item.id}
-            numColumns={2}
-            showsVerticalScrollIndicator={false}
-            ListHeaderComponent={<View />}
-            contentContainerStyle={{
-            paddingHorizontal: 24,
-            alignSelf: 'stretch',
-            }}
+        <SafeAreaView style={styles.Container}>
+            <MasonryList
+                data={clothes}
+                renderItem={({item}) => <Item item={item} />}
+                keyExtractor={item => item.id}
+                numColumns={2}
+                showsVerticalScrollIndicator={false}
+                ListHeaderComponent={<View />}
+                contentContainerStyle={{
+                paddingHorizontal: 24,
+                alignSelf: 'stretch',
+                }}
+            />
+            <FAB
+            visible={true}
+            icon={{ name: 'add', color: 'white' }}
+            color="#e8def9"
+            placement="right"
         />
+        </SafeAreaView>
     )
 }
 
 
 export default ExplorePage;
+
+/* <TouchableOpacity activeOpacity={0.5} onPress={this.SampleFunction} style={styles.TouchableOpacityStyle} >
+<Image 
+source={require("./uploadicon.png")} 
+style={styles.FloatingButtonStyle} />
+</TouchableOpacity> */
+
+const styles = StyleSheet.create({
+
+Container: {
+    flex: 1,
+},
+
+TouchableOpacityStyle:{
+
+    position: 'absolute',
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 100,
+    bottom: 500,
+  },
+
+  FloatingButtonStyle: {
+
+    resizeMode: 'contain',
+    width: 50,
+    height: 50,
+  }
+});
+
+// function ExplorePage({ navigation }) {
+//     return(
+//         <View>
+//         <FAB
+//             visible={true}
+//             icon={{ name: 'add', color: 'white' }}
+//             color="#e8def9"
+//             placement="right"
+//         />
+//         <MasonryList
+//             data={clothes}
+//             renderItem={({item}) => <Item item={item} />}
+//             keyExtractor={item => item.id}
+//             numColumns={2}
+//             showsVerticalScrollIndicator={false}
+//             ListHeaderComponent={<View />}
+//             contentContainerStyle={{
+//             paddingHorizontal: 24,
+//             alignSelf: 'stretch',
+//             }}
+//         />
+//       </View>
+//     )
+// }
 
 {/* <TouchableOpacity activeOpacity={0.5}>
 <Image
