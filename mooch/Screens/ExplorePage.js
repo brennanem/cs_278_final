@@ -111,6 +111,7 @@ function ExplorePage({ navigation }) {
             icon={{ name: 'add', color: 'white' }}
             color="#e8def9"
             placement="right"
+            onPress={() => navigation.navigate('Upload')}
         />
         </SafeAreaView>
     )
