@@ -8,11 +8,9 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 function Login({ navigation }) {
     return(
-        <View>
-          
-            <Text>log in</Text>
+        <View style={{ backgroundColor: 'white', height: '100%' }}>
             <TextInput
-            style={styles.input}
+            style={styles.input1}
             // onChangeText={onChangeEmail} #use this when we build backend 
             // value={email}
             placeholder="email"
@@ -44,14 +42,27 @@ const styles = StyleSheet.create({
       margin: 12,
       borderWidth: 1,
       padding: 10,
+      width: '80%',
+      alignSelf: 'center',
+    },
+    input1: {
+      marginTop: '60%',
+      height: 40,
+      margin: 12,
+      borderWidth: 1,
+      padding: 10,
+      width: '80%',
+      alignSelf: 'center',
     },
     button: {
       backgroundColor:  '#e8def9', 
       borderColor: '#f5dceb',
       marginBottom: 20,
+      width: '50%',
       borderWidth: 0,
       borderRadius: 15,       
-      justifyContent: 'center'
+      alignSelf: 'center',
+      marginTop: '10%',
    },
    buttonText: {
     color:'#5A5A5A', 
