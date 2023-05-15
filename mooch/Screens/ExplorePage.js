@@ -93,7 +93,7 @@ const Item = ({item}) => (
 
 function ExplorePage({ navigation }) {
     return(
-        <SafeAreaView style={styles.Container}>
+        <SafeAreaView style={styles.background}>
             <MasonryList
                 data={clothes}
                 renderItem={({item}) => <Item item={item} />}
@@ -128,8 +128,9 @@ style={styles.FloatingButtonStyle} />
 
 const styles = StyleSheet.create({
 
-Container: {
+background: {
     flex: 1,
+    backgroundColor: 'white',
 },
 
 TouchableOpacityStyle:{

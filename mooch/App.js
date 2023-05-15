@@ -21,18 +21,22 @@ export default function App() {
      <Stack.Screen
           name='Landing'
           component={Landing}
+          options={{headerShown: false}}
         /> 
         <Stack.Screen 
           name='Login'
           component={Login}
+          options={{headerBackTitle: "Back"}}
         />
         <Stack.Screen
           name='Home'
           component={Home}
+          options={{headerShown: false}}
         /> 
         <Stack.Screen
           name='Create Account'
           component={CreateAccount}
+          options={{headerBackTitle: "Back"}}
         /> 
       </Stack.Navigator>
     </NavigationContainer>
@@ -42,8 +46,9 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFB6C1',
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
+    height: '100%',
   },
 });

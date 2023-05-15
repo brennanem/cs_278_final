@@ -11,10 +11,12 @@ function Explore({ navigation }) {
     const Drawer = createDrawerNavigator();
     return(
         <NavigationContainer independent={true}>
-            <Drawer.Navigator>
-            <Drawer.Screen name="explore" component={ExplorePage} />
-            <Drawer.Screen name="aphi" component={Aphi} />
-            <Drawer.Screen name="formals" component={Formals} />
+            <Drawer.Navigator 
+                screenOptions={
+                    {drawerActiveBackgroundColor: "#f3eef6"}}>
+            <Drawer.Screen name="Explore" component={ExplorePage} />
+            <Drawer.Screen name="Aphi" component={Aphi} />
+            <Drawer.Screen name="Formals" component={Formals} />
         </Drawer.Navigator>
       </NavigationContainer>
     )

@@ -11,7 +11,7 @@ const staticImage = require("./mooch_logo.png");
 
 function Landing({ navigation }) {
     return(
-        <SafeAreaView>
+        <SafeAreaView style={styles.background}>
              <Image
              source = {staticImage}
              style = {{ marginTop: 20, marginBottom: 20, alignSelf: 'center'}}
@@ -47,13 +47,17 @@ const styles = StyleSheet.create({
       borderColor: '#f5dceb',
       marginBottom: 20,
       borderWidth: 0,
-      borderRadius: 15,       
+      borderRadius: 15,    
+      marginLeft: 25,
+      marginRight: 25,   
       justifyContent: 'center'
    },
    buttonText: {
     color:'#5A5A5A', 
    },
    background: {
-      backgroundColor: 'white' //not sure about this
+      backgroundColor: 'white', //not sure about this
+      height: '100%',
+      justifyContent: 'center',
    }
   });
