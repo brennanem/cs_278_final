@@ -4,9 +4,7 @@ import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import Formals from './Formals';
-import Aphi from './Aphi';
-import ExplorePage from './ExplorePage';
+import DMpage from './DMpage';
 
 // TO-DO: CHANGE DRAWERS TO DM CONVOS (AKA PPLS NAMES)
 
@@ -15,9 +13,8 @@ function DMs({ navigation }) {
     return(
         <NavigationContainer independent={true}>
             <Drawer.Navigator>
-            <Drawer.Screen name="explore" component={ExplorePage} />
-            <Drawer.Screen name="aphi" component={Aphi} />
-            <Drawer.Screen name="formals" component={Formals} />
+            <Drawer.Screen name="Kathryn" component={DMpage} />
+            <Drawer.Screen name="Christine" component={DMpage} />
         </Drawer.Navigator>
       </NavigationContainer>
     )

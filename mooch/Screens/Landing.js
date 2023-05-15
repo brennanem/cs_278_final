@@ -14,7 +14,7 @@ function Landing({ navigation }) {
         <SafeAreaView style={styles.background}>
              <Image
              source = {staticImage}
-             style = {{ marginTop: 150, marginBottom: 50, alignSelf: 'center'}}
+             style = {{ marginBottom: '10%', alignSelf: 'center'}}
              />
            <Button 
             title='login'
@@ -51,13 +51,13 @@ const styles = StyleSheet.create({
       borderRadius: 15,    
       marginLeft: 25,
       marginRight: 25,   
-      justifyContent: 'center'
+      alignSelf: 'center'
    },
    buttonText: {
     color:'#5A5A5A', 
    },
    background: {
-      backgroundColor: 'white', //not sure about this
+      backgroundColor: '#f7f4fd', //not sure about this
       height: '100%',
       justifyContent: 'center',
    }

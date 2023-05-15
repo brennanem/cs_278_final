@@ -14,10 +14,10 @@ function Login({ navigation }) {
           <View style={styles.background}>
              <Image
              source = {staticImage}
-             style = {{ marginTop: 20, marginBottom: 20, alignSelf: 'center'}}
+             style = {{ marginBottom: '5%', alignSelf: 'center'}}
              />
             <TextInput
-            style={styles.input1}
+            style={styles.input}
             // onChangeText={onChangeEmail} #use this when we build backend 
             // value={email}
             placeholder="email"
@@ -46,10 +46,12 @@ export default Login;
 const styles = StyleSheet.create({
     input: {
       height: 40,
+      width: '80%',
       margin: 12,
       borderWidth: 1,
       padding: 10,
-      borderRadius: 15
+      borderRadius: 15,
+      alignSelf: 'center',
     },
     button: {
       backgroundColor:  '#e8def9', 
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
       width: '50%',
       borderWidth: 0,
       borderRadius: 15,       
-      justifyContent: 'center',
+      alignSelf: 'center',
       margin: 12,
       padding: 10,
    },
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
    },
   background: {
     height: '100%',
-    backgroundColor: 'white',
+    backgroundColor: '#f7f4fd',
     justifyContent: 'center'
    }
   });
