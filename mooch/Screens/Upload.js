@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import {StyleSheet, Text, View, TextInput, Image} from 'react-native';
+import {StyleSheet, Text, View, TextInput, Image, ScrollView} from 'react-native';
 import { Button } from 'react-native-elements';
 import * as React from 'react';
 //import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -7,10 +7,23 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import { useState} from 'react';
+import { MultipleSelectList } from 'react-native-dropdown-select-list'
+import { BottomNavigation } from 'react-native-paper';
 
 function Upload({ navigation }) {
     // image picker
     const [image, setImage] = useState(null);
+
+    const [selected, setSelected] = React.useState([]);
+  
+    const data = [
+        {key:'1', value:'tops'},
+        {key:'2', value:'bottoms'},
+        {key:'3', value:'dresses'},
+        {key:'4', value:'accessories'},
+        {key:'5', value:'sets'},
+        {key:'6', value:'shoes'},
+    ]
   
     const pickImage = async () => {
       // No permissions request is necessary for launching the image library
@@ -29,11 +42,21 @@ function Upload({ navigation }) {
     };
     return(
         <View style={styles.background}>
+          <ScrollView Vertical={true} showsVerticalScrollIndicator={false} style = {{ width: '100%'}}>
             <Button 
             buttonStyle= {styles.button}
             titleStyle={styles.buttonText}
             title="upload an image from camera roll" onPress={pickImage} />
-         {image && <Image source={{ uri: image }} style={{ width: 200, height: 200}} />}
+         {image && <Image source={{ uri: image }} style={{ width: 200, height: 200, alignSelf: 'center', marginBottom:20}} />}
+         <View style={{width: '100%', justifyContent: 'center', alignItems : 'center'}}>
+         <MultipleSelectList 
+                setSelected={(val) => setSelected(val)} 
+                data={data} 
+                save="value"
+                label="Categories"
+                placeholder='select clothing type'
+            />
+         </View>
           <TextInput
           style={styles.input}
           placeholder="item brand"
@@ -42,12 +65,25 @@ function Upload({ navigation }) {
           style={styles.input}
           placeholder="item size"
         />
+        <TextInput
+          style={styles.input}
+          placeholder="cleaning preference"
+        />
+
           <Button
           buttonStyle= {styles.button}
           titleStyle={styles.buttonText}
           title='upload' onPress={() =>
           navigation.navigate('Explore')
           }/>
+
+         <Button
+          buttonStyle= {styles.button}
+          titleStyle={styles.buttonText}
+          title='cancel' onPress={() =>
+          navigation.navigate('Explore')
+          }/>
+          </ScrollView>
         </View>
   )
 }
