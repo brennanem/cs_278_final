@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View, SafeAreaView, Image, Modal } from 'react-native';
+import { Button, StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
+import Modal from "react-native-modal";
 import React, {useState} from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
 import { FAB } from '@rneui/themed';
@@ -9,7 +10,8 @@ const clothes = [
         width: 160,
         height: 230,
         id: '7',
-        text: 'Adika (S)' },
+        text: 'Adika (S)', 
+        washingPref: 'I wash it' },
     { source: require("../clothes_images/denimtop.jpeg"),
         width: 160,
         height: 210,
@@ -22,46 +24,74 @@ const clothes = [
         text: 'TigerMist (S)' }
 ];
 
-const Item = ({item}) => (
-    <View key={item.id} style={{marginTop: 12, flex: 1}}>
-        {/* <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
-        }}></Modal> */}
-      <Image
-        source={item.source}
-        style={{
-          height: item.height,
-          alignSelf: 'stretch',
-          width: item.width,
-          borderRadius: 7,
-        }}
-        resizeMode="cover"
-        onPress={() => setModalVisible(true)}
-      />
-      <Text
-        style={{
-          marginTop: 8,
-          color: '#000000',
-        }}
-      >
-        {item.text}
-      </Text>
-    </View>
-  );
+
 
 
 function Aphi({ navigation }) {
-    const [modalVisible, setModalVisible] = useState(false);
+    const [isModalVisible, setIsModalVisible] = React.useState(false);
+    const [modalItem, setModalItem] = React.useState(null);
+    const handleModal = () => {
+    
+        setIsModalVisible(!isModalVisible);
+    };
+    const Item = ({item}) => (
+        <View key={item.id} style={{marginTop: 12, flex: 1}}>
+          <Pressable onPress={() => {
+            setModalItem(item)
+            handleModal();
+
+            }
+          }>
+            <Image
+            source={item.source}
+            style={{
+              height: item.height,
+              alignSelf: 'stretch',
+              width: item.width,
+              borderRadius: 7,
+            }}
+            resizeMode="cover"
+          />
+          </Pressable>
+          <Text
+            style={{
+              marginTop: 8,
+              color: '#000000',
+            }}
+          >
+            {item.text}
+          </Text>
+        </View>
+      );
     return(
         <SafeAreaView style={styles.background}>
+            <Modal isVisible={isModalVisible}>
+                <View style={styles.modalStyle}>
+                    <View>
+                        <Image
+                        source={modalItem?.source}
+                        style={{
+                            height: modalItem?.height,
+                            alignSelf: 'stretch',
+                            width: modalItem?.width,
+                            borderRadius: 7,
+                        }}
+                        resizeMode="cover"
+                        />
+                        <Text>{modalItem?.text}</Text>
+                        <Text>{modalItem?.washingPref}</Text>
+                        <Button title="Hide modal" onPress={handleModal} />
+                    </View>
+                </View>
+            </Modal>
             <MasonryList
                 data={clothes}
-                renderItem={({item}) => <Item item={item} />}
+                renderItem={({item}) => {
+                    // console.log(handleModal);
+                    // console.log(isModalVisible);
+                    // console.log(setIsModalVisible);
+                    return <Item item={item} /> 
+                }}
                 keyExtractor={item => item.id}
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
@@ -97,6 +127,13 @@ const styles = StyleSheet.create({
 background: {
     flex: 1,
     backgroundColor: 'white',
+},
+modalStyle: {
+    height: '80%',
+    width: '95%',
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    borderRadius: 15,
 },
 TouchableOpacityStyle:{
 
