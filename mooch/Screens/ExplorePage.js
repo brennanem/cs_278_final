@@ -89,7 +89,7 @@ const categories = [
   { text: 'Sets',
       id: '5' },
   { text: 'Shoes',
-      id: '5' }
+      id: '6' }
 ]
 
 
@@ -145,7 +145,7 @@ function ExplorePage({ navigation }) {
           <View style={styles.filterContainer}>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
               {categories.map((item) => (
-              <Pressable style={styles.filterButton}>
+              <Pressable style={styles.filterButton} key={item.id} onPress={() => console.log('pressed')}>
                 <Text style={styles.filterText}>{item.text}</Text>
               </Pressable>
             ))}     
