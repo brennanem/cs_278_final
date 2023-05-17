@@ -94,30 +94,6 @@ const categories = [
 ]
 
 
-const Item = ({item}) => (
-    <View key={item.id} style={{marginTop: 12, flex: 1}}>
-      <Image
-        source={item.source}
-        style={{
-          height: item.height,
-          alignSelf: 'stretch',
-          width: item.width,
-          borderRadius: 7,
-        }}
-        resizeMode="cover"
-      />
-      <Text
-        style={{
-          marginTop: 8,
-          color: '#000000',
-        }}
-      >
-        {item.text}
-      </Text>
-    </View>
-  );
-
-
 function ExplorePage({ navigation }) {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [modalItem, setModalItem] = React.useState(null);
