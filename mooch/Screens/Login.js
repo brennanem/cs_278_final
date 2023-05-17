@@ -6,7 +6,7 @@ import { Button } from 'react-native-elements';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-const staticImage = require("./mooch_logo.png");
+const staticImage = require("./newlogo.png");
 
 
 function Login({ navigation }) {

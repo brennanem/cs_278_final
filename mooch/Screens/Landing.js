@@ -7,7 +7,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { Image } from 'react-native'
 
-const staticImage = require("./mooch_logo.png");
+const staticImage = require("./newlogo.png");
 
 function Landing({ navigation }) {
     return(

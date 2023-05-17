@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View , Image, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
+import { Button, StyleSheet, Text, View , Image, SafeAreaView, FlatList, TouchableOpacity, ScrollView, Pressable } from 'react-native';
 import * as React from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
 import { FAB } from '@rneui/themed';
@@ -19,53 +19,78 @@ const clothes = [
         width: 160,
         height: 280,
         id: '1',
-        text: 'I AM GIA (S)' },
+        text: 'I AM GIA (S)',
+        tags: ['Bottoms'] },
     { source: require("../clothes_images/greenset.jpeg"),
         width: 160,
         height: 200,
         id: '2',
-        text: 'SHIEN (S)' },
+        text: 'SHIEN (S)',
+        tags: ['Sets', 'Tops', 'Bottoms']  },
     { source: require("../clothes_images/blueoneshouldertop.jpeg"),
         width: 160,
         height: 200,
         id: '3',
-        text: 'LIONESS (M)' },
+        text: 'LIONESS (M)',
+        tags: ['Tops']  },
     { source: require("../clothes_images/chainmailtop.jpeg"),
         width: 160,
         height: 250,
         id: '4',
-        text: 'H&M (XS/S)' },
+        text: 'H&M (XS/S)' ,
+        tags: ['Tops'] },
     { source: require("../clothes_images/greendress.jpeg"),
         width: 160,
         height: 210,
         id: '5',
-        text: 'SHEIN (S)' },
+        text: 'SHEIN (S)',
+        tags: ['Dresses']  },
     { source: require("../clothes_images/redscarftop.jpeg"),
         width: 160,
         height: 190,
         id: '6',
-        text: 'PrincessPolly (6)' },
+        text: 'PrincessPolly (6)' ,
+        tags: ['Tops'] },
     { source: require("../clothes_images/swirltop.jpeg"),
         width: 160,
         height: 230,
         id: '7',
-        text: 'Adika (S)' },
+        text: 'Adika (S)',
+        tags: ['Tops']  },
     { source: require("../clothes_images/yellowbralette.jpeg"),
         width: 160,
         height: 250,
         id: '8',
-        text: 'FreePeople (S)' },
+        text: 'FreePeople (S)',
+        tags: ['Tops']  },
     { source: require("../clothes_images/denimtop.jpeg"),
         width: 160,
         height: 210,
         id: '9',
-        text: 'Amazon (S)' },
+        text: 'Amazon (S)' ,
+        tags: ['Tops'] },
     { source: require("../clothes_images/blackstrappydress.jpeg"),
         width: 160,
         height: 200,
         id: '10',
-        text: 'TigerMist (S)' }
+        text: 'TigerMist (S)' ,
+        tags: ['Dresses'] }
 ];
+
+const categories = [
+  { text: 'Tops',
+      id: '1' },
+  { text: 'Bottoms',
+      id: '2' },
+  { text: 'Dresses',
+      id: '3' },
+  { text: 'Accessories',
+      id: '4' },
+  { text: 'Sets',
+      id: '5' },
+  { text: 'Shoes',
+      id: '5' }
+]
 
 
 const Item = ({item}) => (
@@ -91,10 +116,41 @@ const Item = ({item}) => (
     </View>
   );
 
+// <View key={item.id} style={styles.imageContainer}>
+// <Image style={styles.image} source={item.source}/>
+// </View>  
+// buttonStyle= {styles.button}
+// titleStyle={styles.buttonText}
+// title='login' onPress={() =>
+// navigation.navigate('Home')
+// {/* <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scrollView}>
+// {categories.map((item) => (
+//     <Button 
+//       key={item.id} 
+//       buttonStyle={styles.filterButton}
+//       title={item.text}
+//     />            
+// ))}
+// <FlatList style={styles.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+// </ScrollView> */}
+// {categories.map((item) => (
+//   <View key={item.id} style={styles.filterButtonContainer}>
+//     <Button title={item.text} />  
+//   </View>          
+// ))}
 
 function ExplorePage({ navigation }) {
     return(
         <SafeAreaView style={styles.background}>
+          <View style={styles.filterContainer}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+              {categories.map((item) => (
+              <Pressable style={styles.filterButton}>
+                <Text style={styles.filterText}>{item.text}</Text>
+              </Pressable>
+            ))}     
+            </ScrollView>
+          </View>       
             <MasonryList
                 data={clothes}
                 renderItem={({item}) => <Item item={item} />}
@@ -130,8 +186,19 @@ style={styles.FloatingButtonStyle} />
 const styles = StyleSheet.create({
 
 background: {
-    flex: 1,
+    height: '100%',
     backgroundColor: 'white',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    gap: 0,
+    margin: 0
+
+},
+scroll: {
+  backgroundColor: 'white',
+  borderBottomWidth: 0,
+  flex: 1,
+  heigh: 10
 },
 
 TouchableOpacityStyle:{
@@ -150,6 +217,30 @@ TouchableOpacityStyle:{
     resizeMode: 'contain',
     width: 50,
     height: 50,
+  },
+  filterContainer: {
+  },
+
+  filterButton: {
+    backgroundColor:'white',
+    padding:5,
+    margin:5
+  },
+
+  filterText: {
+    fontSize: 16,
+    lineHeight: 21,
+    letterSpacing: 0.25,
+    color: '#5A5A5A',
+  },
+
+  filterButtonContainer: {
+    height: 40,
+    margin: 0,
+    padding: 0,
+    backgroundColor: 'white',
+    border: 0
+
   }
 });
 
