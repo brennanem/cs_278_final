@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View , Image} from 'react-native';
 import * as React from 'react';
 //import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
@@ -14,9 +14,33 @@ const Tab = createMaterialBottomTabNavigator();
 function Home({ navigation }) {
     return(
         <Tab.Navigator initialRouteName='Explore'>
-            <Tab.Screen name="DMs" component={DMs} />
-            <Tab.Screen name="Explore" component={Explore} />
-            <Tab.Screen name="Profile" component={Profile} />
+            <Tab.Screen 
+                name="DMs" 
+                component={DMs}
+                options={{
+                    title: 'DMs',
+                    tabBarIcon: ({size,focused,color}) => {
+                      return ( <Image style={{ width: 26, height: 23 }} source={require('./dmicon.png')} /> );
+                    },
+                }} />
+            <Tab.Screen 
+                name="Explore" 
+                component={Explore} 
+                options={{
+                    title: 'Explore',
+                    tabBarIcon: ({size,focused,color}) => {
+                      return ( <Image style={{ width: 23, height: 23 }} source={require('./exploreicon.png')} /> );
+                    },
+                }} />
+            <Tab.Screen 
+                name="Profile" 
+                component={Profile} 
+                options={{
+                    title: 'Profile',
+                    tabBarIcon: ({size,focused,color}) => {
+                      return ( <Image style={{ width: 23, height: 23 ,}} source={require('./profileicon.png')} /> );
+                    },
+                }} />
         </Tab.Navigator>
     )
 }
