@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
+import { Button, StyleSheet, Text, View, SafeAreaView, Image, Pressable , ScrollView} from 'react-native';
 import Modal from "react-native-modal";
 import React, {useState} from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
@@ -24,7 +24,20 @@ const clothes = [
         text: 'TigerMist (S)' }
 ];
 
-
+const categories = [
+  { text: 'Tops',
+      id: '1' },
+  { text: 'Bottoms',
+      id: '2' },
+  { text: 'Dresses',
+      id: '3' },
+  { text: 'Accessories',
+      id: '4' },
+  { text: 'Sets',
+      id: '5' },
+  { text: 'Shoes',
+      id: '6' }
+]
 
 
 function Aphi({ navigation }) {
@@ -65,6 +78,15 @@ function Aphi({ navigation }) {
       );
     return(
         <SafeAreaView style={styles.background}>
+          <View style={styles.filterContainer}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+              {categories.map((item) => (
+              <Pressable style={styles.filterButton} key={item.id} onPress={() => console.log('pressed')}>
+                <Text style={styles.filterText}>{item.text}</Text>
+              </Pressable>
+            ))}     
+            </ScrollView>
+          </View>
             <Modal isVisible={isModalVisible}>
                 <View style={styles.modalStyle}>
                     <View>
@@ -191,5 +213,17 @@ TouchableOpacityStyle:{
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+  },
+  filterButton: {
+    backgroundColor:'white',
+    padding:5,
+    margin:5
+  },
+
+  filterText: {
+    fontSize: 16,
+    lineHeight: 21,
+    letterSpacing: 0.25,
+    color: '#5A5A5A',
   },
 });

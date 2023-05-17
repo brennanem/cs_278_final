@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, View , Image, SafeAreaView, FlatList, Touchab
 import * as React from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
 import { FAB } from '@rneui/themed';
+import Modal from "react-native-modal";
 
 
 
@@ -116,30 +117,43 @@ const Item = ({item}) => (
     </View>
   );
 
-// <View key={item.id} style={styles.imageContainer}>
-// <Image style={styles.image} source={item.source}/>
-// </View>  
-// buttonStyle= {styles.button}
-// titleStyle={styles.buttonText}
-// title='login' onPress={() =>
-// navigation.navigate('Home')
-// {/* <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scrollView}>
-// {categories.map((item) => (
-//     <Button 
-//       key={item.id} 
-//       buttonStyle={styles.filterButton}
-//       title={item.text}
-//     />            
-// ))}
-// <FlatList style={styles.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
-// </ScrollView> */}
-// {categories.map((item) => (
-//   <View key={item.id} style={styles.filterButtonContainer}>
-//     <Button title={item.text} />  
-//   </View>          
-// ))}
 
 function ExplorePage({ navigation }) {
+  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const [modalItem, setModalItem] = React.useState(null);
+  const handleModal = () => {
+  
+      setIsModalVisible(!isModalVisible);
+  };
+  const Item = ({item}) => (
+      <View key={item.id} style={{marginTop: 12, flex: 1}}>
+        <Pressable onPress={() => {
+          setModalItem(item)
+          handleModal();
+
+          }
+        }>
+          <Image
+          source={item.source}
+          style={{
+            height: item.height,
+            alignSelf: 'stretch',
+            width: item.width,
+            borderRadius: 7,
+          }}
+          resizeMode="cover"
+        />
+        </Pressable>
+        <Text
+          style={{
+            marginTop: 8,
+            color: '#000000',
+          }}
+        >
+          {item.text}
+        </Text>
+      </View>
+    );
     return(
         <SafeAreaView style={styles.background}>
           <View style={styles.filterContainer}>
@@ -150,10 +164,31 @@ function ExplorePage({ navigation }) {
               </Pressable>
             ))}     
             </ScrollView>
-          </View>       
+          </View>
+          <Modal isVisible={isModalVisible}>
+                <View style={styles.modalStyle}>
+                    <View>
+                        <Image
+                        source={modalItem?.source}
+                        style={{
+                            height: modalItem?.height,
+                            alignSelf: 'stretch',
+                            width: modalItem?.width,
+                            borderRadius: 7,
+                        }}
+                        resizeMode="cover"
+                        />
+                        <Text>{modalItem?.text}</Text>
+                        <Text>{modalItem?.washingPref}</Text>
+                        <Button title="Hide modal" onPress={handleModal} />
+                    </View>
+                </View>
+            </Modal>                 
             <MasonryList
                 data={clothes}
-                renderItem={({item}) => <Item item={item} />}
+                renderItem={({item}) => {
+                    return <Item item={item} /> 
+                }}
                 keyExtractor={item => item.id}
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
@@ -162,7 +197,8 @@ function ExplorePage({ navigation }) {
                 paddingHorizontal: 24,
                 alignSelf: 'stretch',
                 }}
-            />
+            >
+            </MasonryList>
             <FAB
             visible={true}
             icon={{ name: 'add', color: 'white' }}
@@ -233,7 +269,33 @@ TouchableOpacityStyle:{
     letterSpacing: 0.25,
     color: '#5A5A5A',
   },
+  modalStyle: {
+    height: '80%',
+    width: '95%',
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    borderRadius: 15,
+},
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
 
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
   filterButtonContainer: {
     height: 40,
     margin: 0,
