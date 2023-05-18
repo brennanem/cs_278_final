@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, View , Image, SafeAreaView, FlatList, Touchab
 import * as React from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
 import { FAB } from '@rneui/themed';
+import Modal from "react-native-modal";
 
 
 
@@ -14,70 +15,72 @@ import { FAB } from '@rneui/themed';
 //     id: string;
 //   }
 
-const clothes = [
+const all_clothes = [
     { source: require("../clothes_images/pinkpants.jpeg"),
         width: 160,
         height: 280,
         id: '1',
         text: 'I AM GIA (S)',
-        tags: ['Bottoms'] },
+        tags: [{name: 'All', id: '0'}, {name: 'Bottoms', id: '1'}] },
     { source: require("../clothes_images/greenset.jpeg"),
         width: 160,
-        height: 200,
+        height: 220,
         id: '2',
         text: 'SHIEN (S)',
-        tags: ['Sets', 'Tops', 'Bottoms']  },
+        tags: [{name: 'All', id: '0'}, {name: 'Bottoms', id: '1'}, {name: 'Sets', id: '2'}, {name: 'Tops', id: '3'}]  },
     { source: require("../clothes_images/blueoneshouldertop.jpeg"),
         width: 160,
-        height: 200,
+        height: 220,
         id: '3',
         text: 'LIONESS (M)',
-        tags: ['Tops']  },
+        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}]  },
     { source: require("../clothes_images/chainmailtop.jpeg"),
         width: 160,
-        height: 250,
+        height: 220,
         id: '4',
         text: 'H&M (XS/S)' ,
-        tags: ['Tops'] },
+        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}] },
     { source: require("../clothes_images/greendress.jpeg"),
         width: 160,
-        height: 210,
+        height: 280,
         id: '5',
         text: 'SHEIN (S)',
-        tags: ['Dresses']  },
+        tags: [{name: 'All', id: '0'}, {name: 'Dresses', id: '1'}]  },
     { source: require("../clothes_images/redscarftop.jpeg"),
         width: 160,
-        height: 190,
+        height: 220,
         id: '6',
         text: 'PrincessPolly (6)' ,
-        tags: ['Tops'] },
+        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}] },
     { source: require("../clothes_images/swirltop.jpeg"),
         width: 160,
-        height: 230,
+        height: 280,
         id: '7',
         text: 'Adika (S)',
-        tags: ['Tops']  },
+        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}]  },
     { source: require("../clothes_images/yellowbralette.jpeg"),
         width: 160,
-        height: 250,
+        height: 280,
         id: '8',
         text: 'FreePeople (S)',
-        tags: ['Tops']  },
+        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}]  },
     { source: require("../clothes_images/denimtop.jpeg"),
         width: 160,
-        height: 210,
+        height: 220,
         id: '9',
         text: 'Amazon (S)' ,
-        tags: ['Tops'] },
+        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}] },
     { source: require("../clothes_images/blackstrappydress.jpeg"),
         width: 160,
-        height: 200,
+        height: 280,
         id: '10',
         text: 'TigerMist (S)' ,
-        tags: ['Dresses'] }
+        tags: [{name: 'All', id: '0'}, {name: 'Dresses', id: '1'}] }
 ];
 
 const categories = [
+  { text: 'All',
+      id: '0' },
   { text: 'Tops',
       id: '1' },
   { text: 'Bottoms',
@@ -89,80 +92,105 @@ const categories = [
   { text: 'Sets',
       id: '5' },
   { text: 'Shoes',
-      id: '5' }
+      id: '6' }
 ]
 
 
-const Item = ({item}) => (
-    <View key={item.id} style={{marginTop: 12, flex: 1}}>
-      <Image
-        source={item.source}
-        style={{
-          height: item.height,
-          alignSelf: 'stretch',
-          width: item.width,
-          borderRadius: 7,
-        }}
-        resizeMode="cover"
-      />
-      <Text
-        style={{
-          marginTop: 8,
-          color: '#000000',
-        }}
-      >
-        {item.text}
-      </Text>
-    </View>
-  );
-
-// <View key={item.id} style={styles.imageContainer}>
-// <Image style={styles.image} source={item.source}/>
-// </View>  
-// buttonStyle= {styles.button}
-// titleStyle={styles.buttonText}
-// title='login' onPress={() =>
-// navigation.navigate('Home')
-// {/* <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scrollView}>
-// {categories.map((item) => (
-//     <Button 
-//       key={item.id} 
-//       buttonStyle={styles.filterButton}
-//       title={item.text}
-//     />            
-// ))}
-// <FlatList style={styles.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
-// </ScrollView> */}
-// {categories.map((item) => (
-//   <View key={item.id} style={styles.filterButtonContainer}>
-//     <Button title={item.text} />  
-//   </View>          
-// ))}
-
 function ExplorePage({ navigation }) {
+  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const [modalItem, setModalItem] = React.useState(null);
+  const [filterCategory, setFilterCategory] = React.useState('All');
+  let clothes = all_clothes.filter(item => {
+    return item.tags.some(tag => filterCategory === tag.name);    
+  })
+  const handleFilterCategory = ({item}) => {
+  
+    setFilterCategory(item.text);
+};
+  const handleModal = () => {
+  
+      setIsModalVisible(!isModalVisible);
+  };
+  const Item = ({item}) => (
+      <View key={item.id} style={{marginTop: 12, flex: 1}}>
+        <Pressable onPress={() => {
+          setModalItem(item)
+          handleModal();
+
+          }
+        }>
+          <Image
+          source={item.source}
+          style={{
+            height: item.height,
+            marginLeft:15,
+            marginRight: 5,
+            alignSelf: 'stretch',
+            width: item.width,
+            borderRadius: 7,
+          }}
+          resizeMode="cover"
+        />
+        </Pressable>
+        <Text
+          style={{
+            marginTop: 8,
+            color: '#5A5A5A',
+            textAlign: 'center'
+          }}
+        >
+          {item.text}
+        </Text>
+      </View>
+    );
     return(
         <SafeAreaView style={styles.background}>
           <View style={styles.filterContainer}>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
               {categories.map((item) => (
-              <Pressable style={styles.filterButton}>
+              <Pressable style={styles.filterButton} key={item.id} onPress={() => handleFilterCategory({item})}>
                 <Text style={styles.filterText}>{item.text}</Text>
               </Pressable>
             ))}     
             </ScrollView>
-          </View>       
+          </View>
+          <Modal isVisible={isModalVisible}>
+                <View style={styles.modalStyle}>
+                    <View>
+                        <Image
+                        source={modalItem?.source}
+                        style={{
+                            height: modalItem?.height,
+                            alignSelf: 'stretch',
+                            width: modalItem?.width,
+                            borderRadius: 7,
+                        }}
+                        resizeMode="cover"
+                        />
+                        <Text>{modalItem?.text}</Text>
+                        <Text>{modalItem?.washingPref}</Text>
+                        <Button title="Hide modal" onPress={handleModal} />
+                    </View>
+                </View>
+            </Modal>                 
             <MasonryList
+            
                 data={clothes}
-                renderItem={({item}) => <Item item={item} />}
+                renderItem={({item}) => {
+                    return <Item item={item} /> 
+                }}
                 keyExtractor={item => item.id}
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={<View />}
                 contentContainerStyle={{
-                paddingHorizontal: 24,
+                marginRight:15,
+                marginLeft:5,
                 alignSelf: 'stretch',
+                alignContent: 'stretch',
                 }}
-            />
+            >
+            </MasonryList>
             <FAB
             visible={true}
             icon={{ name: 'add', color: 'white' }}
@@ -228,12 +256,38 @@ TouchableOpacityStyle:{
   },
 
   filterText: {
-    fontSize: 16,
+    fontSize: 14,
     lineHeight: 21,
     letterSpacing: 0.25,
     color: '#5A5A5A',
   },
+  modalStyle: {
+    height: '80%',
+    width: '95%',
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    borderRadius: 15,
+},
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
 
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
   filterButtonContainer: {
     height: 40,
     margin: 0,

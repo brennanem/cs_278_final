@@ -7,32 +7,58 @@ import MasonryList from '@react-native-seoul/masonry-list';
 import { FAB } from '@rneui/themed';
 import { color } from 'react-native-reanimated';
 
-const clothes = [
+const all_clothes = [
     { source: require("../clothes_images/swirltop.jpeg"),
         width: 160,
-        height: 230,
+        height: 220,
         id: '7',
         text: 'Adika (S)', 
         clothingType: 'Shirt',
-        washingPref: 'I wash it after you return it' },
+        washingPref: 'I wash it after you return it' ,
+        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}] },
     { source: require("../clothes_images/denimtop.jpeg"),
         width: 160,
-        height: 210,
+        height: 280,
         id: '9',
-        text: 'Amazon (S)' },
+        text: 'Amazon (S)' ,
+        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}]  },
     { source: require("../clothes_images/blackstrappydress.jpeg"),
         width: 160,
-        height: 200,
+        height: 280,
         id: '10',
-        text: 'TigerMist (S)' }
+        text: 'TigerMist (S)',
+        tags: [{name: 'All', id: '0'}, {name: 'Dresses', id: '1'}]   }
 ];
 
-
+const categories = [
+  { text: 'All',
+      id: '0' },
+  { text: 'Tops',
+      id: '1' },
+  { text: 'Bottoms',
+      id: '2' },
+  { text: 'Dresses',
+      id: '3' },
+  { text: 'Accessories',
+      id: '4' },
+  { text: 'Sets',
+      id: '5' },
+  { text: 'Shoes',
+      id: '6' }
+]
 
 
 function Aphi({ navigation }) {
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const [modalItem, setModalItem] = React.useState(null);
+    const [filterCategory, setFilterCategory] = React.useState('All');
+    let clothes = all_clothes.filter(item => {
+      return item.tags.some(tag => filterCategory === tag.name);    
+    })
+    const handleFilterCategory = ({item}) => {
+    
+      setFilterCategory(item.text);
+  };
     const handleModal = () => {
     
         setIsModalVisible(!isModalVisible);
@@ -49,6 +75,8 @@ function Aphi({ navigation }) {
             source={item.source}
             style={{
               height: item.height,
+              marginLeft:15,
+              marginRight: 5,
               alignSelf: 'stretch',
               width: item.width,
               borderRadius: 7,
@@ -59,7 +87,8 @@ function Aphi({ navigation }) {
           <Text
             style={{
               marginTop: 8,
-              color: '#000000',
+              color: '#5A5A5A',
+              textAlign: 'center'
             }}
           >
             {item.text}
@@ -68,6 +97,15 @@ function Aphi({ navigation }) {
       );
     return(
         <SafeAreaView style={styles.background}>
+          <View style={styles.filterContainer}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+              {categories.map((item) => (
+              <Pressable style={styles.filterButton} key={item.id} onPress={() => handleFilterCategory({item})}>
+                <Text style={styles.filterText}>{item.text}</Text>
+              </Pressable>
+            ))}     
+            </ScrollView>
+          </View>
             <Modal isVisible={isModalVisible}>
                 <View style={styles.modalStyle}>
                     <>
@@ -131,9 +169,11 @@ function Aphi({ navigation }) {
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={<View />}
                 contentContainerStyle={{
-                paddingHorizontal: 24,
-                alignSelf: 'stretch',
-                }}
+                  marginRight:15,
+                  marginLeft:5,
+                  alignSelf: 'stretch',
+                  alignContent: 'stretch',
+                  }}
             >
             </MasonryList>
             <FAB
@@ -248,5 +288,17 @@ TouchableOpacityStyle:{
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+  },
+  filterButton: {
+    backgroundColor:'white',
+    padding:5,
+    margin:5
+  },
+
+  filterText: {
+    fontSize: 14,
+    lineHeight: 21,
+    letterSpacing: 0.25,
+    color: '#5A5A5A',
   },
 });
