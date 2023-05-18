@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         height: '100%',
         flexDirection: 'column',
         justifyContent: 'flex-end',
-        paddingBottom: '75%',
+        paddingBottom: '80%',
     },
     input: {
         height: 40,
