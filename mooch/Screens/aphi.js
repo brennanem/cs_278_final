@@ -1,9 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
+import { Button } from 'react-native-elements';
 import Modal from "react-native-modal";
 import React, {useState} from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
 import { FAB } from '@rneui/themed';
+import { color } from 'react-native-reanimated';
 
 const clothes = [
     { source: require("../clothes_images/swirltop.jpeg"),
@@ -11,7 +13,8 @@ const clothes = [
         height: 230,
         id: '7',
         text: 'Adika (S)', 
-        washingPref: 'I wash it' },
+        clothingType: 'Shirt',
+        washingPref: 'I wash it after you return it' },
     { source: require("../clothes_images/denimtop.jpeg"),
         width: 160,
         height: 210,
@@ -67,21 +70,52 @@ function Aphi({ navigation }) {
         <SafeAreaView style={styles.background}>
             <Modal isVisible={isModalVisible}>
                 <View style={styles.modalStyle}>
-                    <View>
+                    <>
                         <Image
                         source={modalItem?.source}
                         style={{
-                            height: modalItem?.height,
-                            alignSelf: 'stretch',
-                            width: modalItem?.width,
+                            height: modalItem?.height * 1.5,
+                            alignSelf: 'center',
+                            width: modalItem?.width * 1.5,
                             borderRadius: 7,
+                            borderColor: 'grey',
                         }}
                         resizeMode="cover"
                         />
-                        <Text>{modalItem?.text}</Text>
-                        <Text>{modalItem?.washingPref}</Text>
-                        <Button title="Hide modal" onPress={handleModal} />
-                    </View>
+                        <Text style={{ 
+                                fontSize: 25,
+                                color: '#5A5A5A', 
+                                alignSelf: 'center',
+                                fontWeight: 'bold',
+                                }}>{modalItem?.text}</Text>
+                        <Text style={{fontSize: 15,
+                                color: '#5A5A5A', 
+                                alignSelf: 'center',}}><Text style={{ fontWeight: 'bold' }}>Type:</Text> {modalItem?.clothingType}</Text>
+                        <Text style={{ontSize: 15,
+                                color: '#5A5A5A', 
+                                alignSelf: 'center',}}><Text style={{ fontWeight: 'bold' }}>Wash preference:</Text> {modalItem?.washingPref}</Text>
+                        <Button buttonStyle={{backgroundColor:  '#e8def9', 
+                                                borderColor: '#f5dceb',
+                                                width: '50%',
+                                                borderWidth: 0,
+                                                borderRadius: 15,       
+                                                alignSelf: 'center',
+                                                padding: 10,}} 
+                                            titleStyle={{ color:'#5A5A5A' }} 
+                                            title="request" 
+                                            onPress={handleModal} />
+                        <Button buttonStyle={{borderWidth: 2,
+                                                borderColor: '#e8def9',
+                                                marginBottom: 10,
+                                                width: '50%',
+                                                borderRadius: 15,       
+                                                alignSelf: 'center',
+                                                }} 
+                                            type='outline'
+                                            titleStyle={{ color:'#5A5A5A' }} 
+                                            title="go back" 
+                                            onPress={handleModal} />
+                    </>
                 </View>
             </Modal>
             <MasonryList
@@ -132,8 +166,31 @@ modalStyle: {
     height: '80%',
     width: '95%',
     alignSelf: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#f7f4fd',
     borderRadius: 15,
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
+},
+modalText: {
+    fontSize: 10,
+    color: '#5A5A5A',
+},
+button: {
+    backgroundColor:  '#e8def9', 
+    borderColor: '#f5dceb',
+    marginBottom: 20,
+    width: '50%',
+    borderWidth: 0,
+    borderRadius: 15,       
+    alignSelf: 'center',
+    margin: 12,
+    padding: 10,
+ },
+ buttonText: {
+  color:'#5A5A5A', 
+ },
+modalRequestButton: {
+
 },
 TouchableOpacityStyle:{
 

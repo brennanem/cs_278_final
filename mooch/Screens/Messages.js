@@ -35,9 +35,11 @@ const styles = StyleSheet.create({
         height: '100%',
         flexDirection: 'column',
         justifyContent: 'flex-start',
-        paddingTop: '10%'
+        paddingTop: '10%',
+        backgroundColor: '#f7f4fd'
     },
     outline: {
+        backgroundColor: '#e8def9',
         borderWidth: 1,
         borderRadius: 15,
         width: '70%',
@@ -46,6 +48,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     outline2: {
+        backgroundColor: '#e8def9',
         borderWidth: 1,
         borderRadius: 15,
         width: '70%',

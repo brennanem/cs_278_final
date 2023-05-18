@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
  },
 background: {
   height: '100%',
-  backgroundColor: 'white',
+  backgroundColor: '#f7f4fd',
   justifyContent: 'center'
  }
 });
