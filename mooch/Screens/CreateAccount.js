@@ -2,6 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Image, Text, TextInput, View, SafeAreaView } from 'react-native';
 import { Button } from 'react-native-elements';
 import * as React from 'react';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebaseConfig"; // IMPORTANT: this ensures that getAuth is called before we use auth in this file
 //import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
