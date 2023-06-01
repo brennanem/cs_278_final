@@ -5,11 +5,15 @@ import { Button } from 'react-native-elements';
 //import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 
 const staticImage = require("./newlogo.png");
 
 
 function Login({ navigation }) {
+    const [email, onChangeEmail] = React.useState('');
+    const [password, onChangePassword] = React.useState('');
     return(
           <View style={styles.background}>
              <Image
@@ -18,28 +22,44 @@ function Login({ navigation }) {
              />
             <TextInput
             style={styles.input}
-            // onChangeText={onChangeEmail} #use this when we build backend 
-            // value={email}
             placeholder="email"
+            onChangeText={onChangeEmail}
+            value={email}
             />
             <TextInput
             style={styles.input}
-            // onChangeText={onChangePassword}
-            // value={password}
             placeholder="password"
+            onChangeText={onChangePassword}
+            value={password}
             secureTextEntry={true}
           />
             <Button
             buttonStyle= {styles.button}
             titleStyle={styles.buttonText}
-            title='login' onPress={() =>
-            navigation.navigate('Home')
-            }/>
+            title='login' 
+            onPress={() => authenticate(email, password, navigation)}
+            />
           </View>
     )
 }
 
 export default Login;
+
+function authenticate(email, password, navigation) {
+  signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(`Signed in user with email ${email}!`);
+    navigation.navigate('Home', { userId: user.uid });
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(`errorCode ${errorCode} and errorMessage ${errorMessage}`); // TODO: error catching
+  });
+}
 
 
 

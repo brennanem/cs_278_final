@@ -11,7 +11,7 @@ import Explore from './Explore';
 
 const Tab = createMaterialBottomTabNavigator();
 
-function Home({ navigation }) {
+function Home({ route, navigation }) {
     return(
         <Tab.Navigator initialRouteName='Explore'>
             <Tab.Screen 
