@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Image, Text, TextInput, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Image, Text, TextInput, View, SafeAreaView, KeyboardAvoidingView,} from 'react-native';
 import * as React from 'react';
 import { Button } from 'react-native-elements';
 //import {createDrawerNavigator} from '@react-navigation/drawer';
