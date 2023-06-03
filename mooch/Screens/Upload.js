@@ -10,8 +10,8 @@ import { useState} from 'react';
 import { MultipleSelectList } from 'react-native-dropdown-select-list'
 import { BottomNavigation } from 'react-native-paper';
 
-const {Firestore} = require('@google-cloud/firestore');
-const firestore = new Firestore();
+// const {Firestore} = require('@google-cloud/firestore');
+// const firestore = new Firestore();
 // async function quickstart() {
 //   // Obtain a document reference.
 //   const document = firestore.doc('posts/intro-to-firestore');
