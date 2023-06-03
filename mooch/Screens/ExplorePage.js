@@ -207,7 +207,7 @@ export default ExplorePage;
 
 /* <TouchableOpacity activeOpacity={0.5} onPress={this.SampleFunction} style={styles.TouchableOpacityStyle} >
 <Image 
-source={require("./uploadicon.png")} 
+source={require("../icons/uploadicon.png")} 
 style={styles.FloatingButtonStyle} />
 </TouchableOpacity> */
 
@@ -325,7 +325,7 @@ TouchableOpacityStyle:{
 
 {/* <TouchableOpacity activeOpacity={0.5}>
 <Image
-    ssource={require("./uploadicon.png")}
+    ssource={require("../icons/uploadicon.png")}
 />
 onPress={() => navigation.navigate('Upload')}
 </TouchableOpacity> */}

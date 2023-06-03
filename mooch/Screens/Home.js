@@ -20,7 +20,7 @@ function Home({ route, navigation }) {
                 options={{
                     title: 'DMs',
                     tabBarIcon: ({size,focused,color}) => {
-                      return ( <Image style={{ width: 26, height: 23 }} source={require('./dmicon.png')} /> );
+                      return ( <Image style={{ width: 26, height: 23 }} source={require('../icons/dmicon.png')} /> );
                     },
                 }} />
             <Tab.Screen 
@@ -29,7 +29,7 @@ function Home({ route, navigation }) {
                 options={{
                     title: 'Explore',
                     tabBarIcon: ({size,focused,color}) => {
-                      return ( <Image style={{ width: 23, height: 23 }} source={require('./exploreicon.png')} /> );
+                      return ( <Image style={{ width: 23, height: 23 }} source={require('../icons/exploreicon.png')} /> );
                     },
                 }} />
             <Tab.Screen 
@@ -38,7 +38,7 @@ function Home({ route, navigation }) {
                 options={{
                     title: 'Profile',
                     tabBarIcon: ({size,focused,color}) => {
-                      return ( <Image style={{ width: 23, height: 23 ,}} source={require('./profileicon.png')} /> );
+                      return ( <Image style={{ width: 23, height: 23 ,}} source={require('../icons/profileicon.png')} /> );
                     },
                 }} />
         </Tab.Navigator>

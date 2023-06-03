@@ -8,14 +8,15 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 
-const staticImage = require("./newlogo.png");
-
+const staticImage = require("../icons/newlogo.png");
 
 function Login({ navigation }) {
     const [email, onChangeEmail] = React.useState('');
     const [password, onChangePassword] = React.useState('');
     return(
-          <View style={styles.background}>
+          < KeyboardAvoidingView 
+          behavior="padding"
+          style={styles.background}>
              <Image
              source = {staticImage}
              style = {{ marginBottom: '5%', alignSelf: 'center'}}
@@ -39,7 +40,7 @@ function Login({ navigation }) {
             title='login' 
             onPress={() => authenticate(email, password, navigation)}
             />
-          </View>
+          </ KeyboardAvoidingView>
     )
 }
 

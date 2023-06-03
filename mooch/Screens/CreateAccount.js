@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Image, Text, TextInput, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Image, Text, TextInput, View, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import { Button } from 'react-native-elements';
 import * as React from 'react';
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -8,14 +8,16 @@ import { auth } from "../firebaseConfig"; // IMPORTANT: this ensures that getAut
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-const staticImage = require("./newlogo.png");
+const staticImage = require("../icons/newlogo.png");
 
 
 function CreateAccount({ route, navigation }) {
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
     return(
-        <View style={styles.background}>
+      < KeyboardAvoidingView 
+      behavior="padding"
+      style={styles.background}>
              <Image
              source = {staticImage}
              style = {{ marginTop: 20, marginBottom: 20, alignSelf: 'center'}}
@@ -45,7 +47,7 @@ function CreateAccount({ route, navigation }) {
             title='create account' 
             onPress={() => authenticate(email, password, navigation)}
             />
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 
