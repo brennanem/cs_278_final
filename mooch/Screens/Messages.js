@@ -1,11 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View, TextInput } from 'react-native';
+import { Button, StyleSheet, Text, View, TextInput, KeyboardAvoidingView } from 'react-native';
 import * as React from 'react';
 
 // Eventually, this component will take in the data of what was sent as a message and render each message seperately. Here, all the messages are hard coded.
 function Messages({ navigation }) {
     return(
-        <View style={styles.container}>
+        < View style={styles.container}>
             <View style={styles.outline}>
                 <Text>Hey! I'm interested in borrowing this but was wondering if it's see-through?</Text>
             </View>
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         height: '100%',
         flexDirection: 'column',
         justifyContent: 'flex-end',
-        paddingBottom: '75%',
+        paddingBottom: '80%',
     },
     input: {
         height: 40,

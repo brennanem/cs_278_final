@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import {StyleSheet, Text, View, TextInput, Image, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, TextInput, Image, ScrollView, KeyboardAvoidingView} from 'react-native';
 import { Button } from 'react-native-elements';
 import * as React from 'react';
 //import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -10,11 +10,54 @@ import { useState} from 'react';
 import { MultipleSelectList } from 'react-native-dropdown-select-list'
 import { BottomNavigation } from 'react-native-paper';
 
+// const {Firestore} = require('@google-cloud/firestore');
+// const firestore = new Firestore();
+// async function quickstart() {
+//   // Obtain a document reference.
+//   const document = firestore.doc('posts/intro-to-firestore');
+
+//   // Enter new data into the document.
+//   await document.set({
+//     title: 'Welcome to Firestore',
+//     body: 'Hello World',
+//   });
+//   console.log('Entered new data into the document');
+
+//   // Update an existing document.
+//   await document.update({
+//     body: 'My first Firestore app',
+//   });
+//   console.log('Updated an existing document');
+
+//   // Read the document.
+//   const doc = await document.get();
+//   console.log('Read the document');
+
+//   // Delete the document.
+//   await document.delete();
+//   console.log('Deleted the document');
+// }
+// quickstart();
+
 function Upload({ navigation }) {
     // image picker
     const [image, setImage] = useState(null);
 
-    const [selected, setSelected] = React.useState([]);
+    const [selected, setSelected] = React.useState([]); //tags
+    const [size, setSize] = React.useState(null);  //size
+    const [brand, setBrand] = React.useState(null); //brand
+    // cleaning
+
+    // let collectionRef = firestore.collection('uploads');
+    // const numPosts = collection.count();
+    // let postTitle = 'post'.concat(numPosts.toString())
+    
+    // collectionRef.add(
+    //   { id: postTitle,
+    //   }
+    // ).then(documentReference => {
+    //   console.log(`Added document with name: ${documentReference.id}`);
+    // });
   
     const data = [
         {key:'1', value:'tops'},
@@ -41,7 +84,9 @@ function Upload({ navigation }) {
       }
     };
     return(
-        <View style={styles.background}>
+      < KeyboardAvoidingView 
+      behavior="padding"
+      style={styles.background}>
           <ScrollView Vertical={true} showsVerticalScrollIndicator={false} style = {{ width: '100%'}}>
             <Button 
             buttonStyle= {styles.button}
@@ -84,7 +129,7 @@ function Upload({ navigation }) {
           navigation.navigate('Explore')
           }/>
           </ScrollView>
-        </View>
+          </KeyboardAvoidingView>
   )
 }
 

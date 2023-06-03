@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, Pressable , ScrollView} from 'react-native';
 import { Button } from 'react-native-elements';
 import Modal from "react-native-modal";
 import React, {useState} from 'react';
@@ -129,7 +129,7 @@ function Aphi({ navigation }) {
                         <Text style={{fontSize: 15,
                                 color: '#5A5A5A', 
                                 alignSelf: 'center',}}><Text style={{ fontWeight: 'bold' }}>Type:</Text> {modalItem?.clothingType}</Text>
-                        <Text style={{ontSize: 15,
+                        <Text style={{fontSize: 15,
                                 color: '#5A5A5A', 
                                 alignSelf: 'center',}}><Text style={{ fontWeight: 'bold' }}>Wash preference:</Text> {modalItem?.washingPref}</Text>
                         <Button buttonStyle={{backgroundColor:  '#e8def9', 
@@ -192,7 +192,7 @@ export default Aphi;
 
 /* <TouchableOpacity activeOpacity={0.5} onPress={this.SampleFunction} style={styles.TouchableOpacityStyle} >
 <Image 
-source={require("./uploadicon.png")} 
+source={require("../icons/uploadicon.png")} 
 style={styles.FloatingButtonStyle} />
 </TouchableOpacity> */
 

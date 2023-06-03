@@ -9,6 +9,7 @@ import Home from './Screens/Home';
 import Landing from './Screens/Landing';
 import CreateAccount from './Screens/CreateAccount';
 import Upload from './Screens/Upload';
+import RequestNotifications from './Screens/RequestNotifications';
 //import Explore from './Screens/Explore';
 
 const Stack = createNativeStackNavigator();
@@ -43,6 +44,11 @@ export default function App() {
           name='Upload'
           component={Upload}
           options={{headerBackTitle: "Back"}}
+        /> 
+        <Stack.Screen
+          name='RequestNotifications'
+          component={RequestNotifications}
+          options={{headerBackTitleVisible: false, headerTitle: "" }}
         /> 
       </Stack.Navigator>
     </NavigationContainer>

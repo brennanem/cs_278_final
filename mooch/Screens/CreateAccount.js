@@ -1,53 +1,77 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Image, Text, TextInput, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Image, Text, TextInput, View, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import { Button } from 'react-native-elements';
 import * as React from 'react';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebaseConfig"; // IMPORTANT: this ensures that getAuth is called before we use auth in this file
 //import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-const staticImage = require("./newlogo.png");
+const staticImage = require("../icons/newlogo.png");
 
 
-function CreateAccount({ navigation }) {
+function CreateAccount({ route, navigation }) {
+  const [email, onChangeEmail] = React.useState('');
+  const [password, onChangePassword] = React.useState('');
     return(
-        <View style={styles.background}>
+      < KeyboardAvoidingView 
+      behavior="padding"
+      style={styles.background}>
              <Image
              source = {staticImage}
              style = {{ marginTop: 20, marginBottom: 20, alignSelf: 'center'}}
              />
             <TextInput
             style={styles.input}
-            // onChangeText={onChangeEmail} #use this when we build backend 
-            // value={email}
             placeholder="email"
+            onChangeText={onChangeEmail}
+            value={email}
             />
-            <TextInput
+            {/* <TextInput
             style={styles.input}
             // onChangeText={onChangeUsername}  
             // value={username}
             placeholder="username"
-            />
+            /> */}
              <TextInput
             style={styles.input}
-            // onChangeText={onChangePassword}
-            // value={password}
             placeholder="password"
+            onChangeText={onChangePassword}
+            value={password}
             secureTextEntry={true}
           />
             <Button
             buttonStyle = {styles.button}
             titleStyle = {styles.buttonText}
-            title='create account' onPress={() =>
-            navigation.navigate('Home')
-            }/>
-        </View>
+            title='create account' 
+            onPress={() => authenticate(email, password, navigation)}
+            />
+        </KeyboardAvoidingView>
     )
 }
 
 export default CreateAccount;
 
 
+// https://firebase.google.com/docs/auth/web/start#sign_up_new_users
+// consider having a firebase.js?
+function authenticate(email, password, navigation) {
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      console.log(`Created new user with email ${email}!`);
+      navigation.navigate('Home', { userId: user.uid });
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(`errorCode ${errorCode} and errorMessage ${errorMessage}`);
+      // ..
+    });
+}
 
 
 const styles = StyleSheet.create({

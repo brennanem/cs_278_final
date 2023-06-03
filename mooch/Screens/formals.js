@@ -68,7 +68,7 @@ export default Formals;
 
 /* <TouchableOpacity activeOpacity={0.5} onPress={this.SampleFunction} style={styles.TouchableOpacityStyle} >
 <Image 
-source={require("./uploadicon.png")} 
+source={require("../icons/uploadicon.png")} 
 style={styles.FloatingButtonStyle} />
 </TouchableOpacity> */
 
