@@ -3,7 +3,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, initializeAuth, browserLocalPersistence } from "firebase/auth";
 import { getFirestore, collection, doc, addDoc, setDoc , updateDoc, arrayUnion, onSnapshot, getDocs } from "firebase/firestore";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL, getMetadata, listAll } from "firebase/storage";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -32,4 +32,4 @@ const itemsRef = ref(storage, 'items');
 const profilePicsRef = ref(storage, 'profilePictures');
 // const storage = getStorage(firebaseApp, "gs://my-custom-bucket");
 
-export { app, auth, db, storage, getFirestore, collection, doc, addDoc, setDoc, updateDoc, arrayUnion, ref, uploadBytes, onSnapshot, getDocs};
+export { app, auth, db, storage, getFirestore, collection, doc, addDoc, setDoc, updateDoc, arrayUnion, ref, uploadBytes, onSnapshot, getDocs, getDownloadURL, getMetadata, listAll};

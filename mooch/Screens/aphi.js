@@ -2,63 +2,74 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView, Image, Pressable , ScrollView} from 'react-native';
 import { Button } from 'react-native-elements';
 import Modal from "react-native-modal";
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
 import { FAB } from '@rneui/themed';
 import { color } from 'react-native-reanimated';
 import { useRoute } from "@react-navigation/native"
-import { db, collection, getDocs} from "../firebase/firebaseConfig";
+import { db, collection, getDocs, ref, storage, getDownloadURL, getMetadata, listAll} from "../firebase/firebaseConfig";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 
 
 const categories = [
-  { text: 'All',
+  { text: 'all',
       id: '0' },
-  { text: 'Tops',
+  { text: 'tops',
       id: '1' },
-  { text: 'Bottoms',
+  { text: 'bottoms',
       id: '2' },
-  { text: 'Dresses',
+  { text: 'dresses',
       id: '3' },
-  { text: 'Accessories',
+  { text: 'accessories',
       id: '4' },
-  { text: 'Sets',
+  { text: 'sets',
       id: '5' },
-  { text: 'Shoes',
+  { text: 'shoes',
       id: '6' }
 ]
 
 
-const all_clothes = [
-  { source: require("../clothes_images/swirltop.jpeg"),
-      width: 160,
-      height: 220,
-      id: '7',
-      text: 'Adika (S)', 
-      clothingType: 'Shirt',
-      washingPref: 'I wash it after you return it' ,
-      tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}] },
-  { source: require("../clothes_images/denimtop.jpeg"),
-      width: 160,
-      height: 280,
-      id: '9',
-      text: 'Amazon (S)' ,
-      tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}]  },
-  { source: require("../clothes_images/blackstrappydress.jpeg"),
-      width: 160,
-      height: 280,
-      id: '10',
-      text: 'TigerMist (S)',
-      tags: [{name: 'All', id: '0'}, {name: 'Dresses', id: '1'}]   }
-];
+// const all_clothes = [
+//   { source: require("../clothes_images/swirltop.jpeg"),
+//       width: 160,
+//       height: 220,
+//       id: '7',
+//       text: 'Adika (S)', 
+//       clothingType: 'Shirt',
+//       washingPref: 'I wash it after you return it' ,
+//       tags: [{name: 'all', id: '0'}, {name: 'tops', id: '1'}] },
+//   { source: require("../clothes_images/denimtop.jpeg"),
+//       width: 160,
+//       height: 280,
+//       id: '9',
+//       text: 'Amazon (S)' ,
+//       tags: [{name: 'all', id: '0'}, {name: 'tops', id: '1'}]  },
+//   { source: require("../clothes_images/blackstrappydress.jpeg"),
+//       width: 160,
+//       height: 280,
+//       id: '10',
+//       text: 'TigerMist (S)',
+//       tags: [{name: 'all', id: '0'}, {name: 'dresses', id: '1'}]   }
+// ];
+
+// const reference = storage();
+
+// type ItemData = {
+//   imageName: string;
+//   source: string;
+//   width: number;
+//   height: number;
+//   id: string;
+// };
 
 
 function Aphi({ navigation }) {
     const group = 'Aphi';
-    const [isModalVisible, setIsModalVisible] = React.useState(false);
-    const [modalItem, setModalItem] = React.useState(null);
-    const [filterCategory, setFilterCategory] = React.useState('All');
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [modalItem, setModalItem] = useState(null);
+    const [filterCategory, setFilterCategory] = useState('all');
+    const [clothes, setClothes] = useState([]);
 
     const auth = getAuth();
     const user = auth.currentUser;
@@ -66,36 +77,123 @@ function Aphi({ navigation }) {
     // let all_clothes = [];
     const heights = [280, 220];
 
-    const getData = async () => {
-      if (user) {
-        // const q = query(collection(db, "cities"), where("capital", "==", true)); -> can try this for filtering
-        let data = [];
-        const q = await getDocs(collection(db, "groups", group, "posts"));
-        q.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          let newItem = doc.data();
-          newItem.id = doc.id;
-          // newItem.source = do something here
-          newItem.width = 160;
-          newItem.height = heights[Math.floor(Math.random()*heights.length)];
-          data.push(newItem)
+    useEffect(() => {
+      const imagesRef = ref(storage, 'groupImages/'+group);
+      listAll(imagesRef)
+        .then((res) => {
+          setClothes([]);
+          // let newClothes = [];
+          res.items.forEach( async (imageRef) => {
+            const imagePath = imageRef.fullPath;
+            // console.log("imagePath", imagePath);
+            const url = await getDownloadURL(ref(storage, imagePath));
+            const metadata = await getMetadata(ref(storage, imagePath));
+            // console.log("metadata", metadata)
+            // .substring(0, url.lastIndexOf('.jpg')+4)
+            const itemData = {
+              id: imagePath.substring(imagePath.lastIndexOf('/') + 1),
+              text: metadata.customMetadata?.brand + " (" + metadata.customMetadata?.size + ")",
+              source: {uri : url} ,
+              cleaningPref: metadata.customMetadata?.cleaningPref,
+              owner: metadata.customMetadata?.owner,
+              tags: metadata.customMetadata?.tags.split(","),
+              width: 160,
+              height: heights[Math.floor(Math.random()*heights.length)]
+            };
+            // newClothes.push(itemData);
+            // console.log("imageRef", imageRef);
+            setClothes(prev => [...prev, itemData]);
+          });
+          // console.log("new cloths", newClothes);
+          // setClothes(prev => [...prev]+newClothes);
+        })
+        .catch((error) => {
+          console.log("error", error)
+          // Uh-oh, an error occurred!
         });
-        console.log(data);
 
-      } else {
-        console.log("user not signed in");
-      }    
-    }
+    }, []);
 
+    // const getData = async () => {
+    //   reference
+    //     .ref('items')
+    //   if (user) {
+    //     let data = [];
+    //     const q = await getDocs(collection(db, "groups", group, "posts"));
+    //     q.forEach( async (doc) => {
+    //       let newItem = doc.data();
+    //       newItem.id = doc.id;
+    //       newItem.width = 160;
+    //       newItem.height = heights[Math.floor(Math.random()*heights.length)];
+    //       newItem.text = newItem.brand + " (" + newItem.size + ")"
+    //       console.log("newItem pre", newItem);
+    //       const url = await getDownloadURL(ref(storage, newItem.imagePath))
+    //       newItem.source = url
+    //       data.push(newIem);
+    //     });
+    //     // all_clothes = all_clothes.concat(data);
+    //     setClothes(data)
+    //     // console.log("data", data);
+    //   } else {
+    //     console.log("user not signed in");
+    //   }    
+    // }
     // getData();
 
+    // console.log("start")
+
+
+    // const handleData = () => {
+    //   const getData = async () => {
+    //     if (user) {
+    //       // const q = query(collection(db, "cities"), where("capital", "==", true)); -> can try this for filtering
+    //       // let data = [];
+    //       const q = await getDocs(collection(db, "groups", group, "posts"));
+    //       q.forEach( async (doc) => {
+    //         // doc.data() is never undefined for query doc snapshots
+    //         let newItem = doc.data();
+    //         newItem.id = doc.id;
+    //         // newItem.source = do something here
+    //         newItem.width = 160;
+    //         newItem.height = heights[Math.floor(Math.random()*heights.length)];
+    //         newItem.text = newItem.brand + " (" + newItem.size + ")"
+    //         console.log("newItem pre", newItem);
+    //         // const url = await getDownloadURL(ref(storage, newItem.imagePath));
+    //         // newItem.source = url
+    //         const url = await getDownloadURL(ref(storage, newItem.imagePath))
+    //           // .then((url) => {
+    //           //   console.log("url", url)
+    //           //   newItem["source"] = url
+    //           // })
+    //           // .catch((error) => {
+    //           //   console.log("error getting image url:", error);
+    //           // })
+    //         newItem.source = url
+    //         // console.log("newItem", newItem);
+    //         // data.push(newItem);
+    //         // console.log("pre data", data);
+    //         all_clothes.push(newIem);
+  
+    //       });
+    //       all_clothes = all_clothes.concat(data);
+    //       // console.log("data", data);
+    //     } else {
+    //       console.log("user not signed in");
+    //     }    
+    //   }
+    //   getData();
+    // }
 
 
 
+    // handleData();
+    // console.log("all clothes", all_clothes);
 
-    let clothes = all_clothes.filter(item => {
-      return item.tags.some(tag => filterCategory === tag.name);    
-    })
+    // let clothes = all_clothes.filter((item) => {
+    //   return item.tags.some(tag => filterCategory === tag.name);    
+    // })
+
+    console.log("clothes", clothes)
     const handleFilterCategory = ({item}) => {
     
       setFilterCategory(item.text);
