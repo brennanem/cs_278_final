@@ -3,63 +3,35 @@ import {StyleSheet, Text, View, TextInput, Image, ScrollView, KeyboardAvoidingVi
 import { Button } from 'react-native-elements';
 import * as React from 'react';
 //import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useRoute} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import { useState} from 'react';
 import { MultipleSelectList } from 'react-native-dropdown-select-list'
 import { BottomNavigation } from 'react-native-paper';
+import { app, db , storage, getFirestore, collection, doc, addDoc, setDoc , updateDoc, arrayUnion, ref, uploadBytes} from "../firebase/firebaseConfig";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-// const {Firestore} = require('@google-cloud/firestore');
-// const firestore = new Firestore();
-// async function quickstart() {
-//   // Obtain a document reference.
-//   const document = firestore.doc('posts/intro-to-firestore');
 
-//   // Enter new data into the document.
-//   await document.set({
-//     title: 'Welcome to Firestore',
-//     body: 'Hello World',
-//   });
-//   console.log('Entered new data into the document');
-
-//   // Update an existing document.
-//   await document.update({
-//     body: 'My first Firestore app',
-//   });
-//   console.log('Updated an existing document');
-
-//   // Read the document.
-//   const doc = await document.get();
-//   console.log('Read the document');
-
-//   // Delete the document.
-//   await document.delete();
-//   console.log('Deleted the document');
-// }
-// quickstart();
 
 function Upload({ navigation }) {
     // image picker
-    const [image, setImage] = useState(null);
+    const route = useRoute();
+    const group = route.params?.group;
 
-    const [selected, setSelected] = React.useState([]); //tags
+    const [image, setImage] = useState(null);
+    // const [uploading, setUploading] = useState(false);
+    const [selectedTags, setSelectedTags] = React.useState([]); //tags
     const [size, setSize] = React.useState(null);  //size
     const [brand, setBrand] = React.useState(null); //brand
-    // cleaning
+    const [cleaningPref, setCleaningPref] = React.useState(null);// cleaning
+    const [docRef, setDocRef] = React.useState(null);// cleaning
+    const [filename, setFilename] = React.useState(null);// cleaning
+    // const [cleaningPref, setCleaningPref] = React.useState(null);// cleaning
 
-    // let collectionRef = firestore.collection('uploads');
-    // const numPosts = collection.count();
-    // let postTitle = 'post'.concat(numPosts.toString())
-    
-    // collectionRef.add(
-    //   { id: postTitle,
-    //   }
-    // ).then(documentReference => {
-    //   console.log(`Added document with name: ${documentReference.id}`);
-    // });
+
   
-    const data = [
+    const tags = [
         {key:'1', value:'tops'},
         {key:'2', value:'bottoms'},
         {key:'3', value:'dresses'},
@@ -67,6 +39,66 @@ function Upload({ navigation }) {
         {key:'5', value:'sets'},
         {key:'6', value:'shoes'},
     ]
+
+    const handleUpload = () => {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const uid = user.uid;
+        console.log("user signed in with id", uid)
+
+        const uploadImage = async () => {
+          const filename = image.substring(image.lastIndexOf('/') + 1);
+          const storageRef = ref(storage, 'items/'+filename);
+          //convert iamge to array of bytes
+          const img = await fetch(image);
+          const bytes = await img.blob();
+          await uploadBytes(storageRef, bytes);
+          const uploadPost = async () => {
+            try {
+              const docRef = await addDoc(collection(db, "groups", group, "posts"), {
+                size: size,
+                brand: brand,
+                cleaningPref: cleaningPref,
+                owner: '/users/'.concat(uid),
+                tags: selectedTags, 
+                imagePath: 'items/'+filename
+              });
+              console.log("new post document written with id", docRef.id);
+              const updateUser = async () => {
+                try {
+                  const userRef = doc(db, "users", uid);
+                  console.log(userRef)
+                  await updateDoc(userRef, {
+                    posts: arrayUnion(docRef)
+                  });
+                  console.log("user update written");
+                } catch (e) {
+                  console.error("Error updating user document: ", e);
+                }
+              }
+              updateUser();
+            } catch (e) {
+              console.error("Error writing post document: ", e);
+            }
+          }
+          uploadPost();
+        };
+        uploadImage();
+      } else {
+        console.log("user not signed in");
+      }      
+      setImage(null);
+      setSelectedTags([]);
+      setSize(null);
+      setBrand(null);
+      setCleaningPref(null);
+      navigation.navigate('Explore');
+    }
+
+
   
     const pickImage = async () => {
       // No permissions request is necessary for launching the image library
@@ -75,11 +107,9 @@ function Upload({ navigation }) {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
-      });
-  
-      console.log(result);
-  
+      });  
       if (!result.canceled) {
+        // console.log(result);
         setImage(result.assets[0].uri);
       }
     };
@@ -95,8 +125,8 @@ function Upload({ navigation }) {
          {image && <Image source={{ uri: image }} style={{ width: 200, height: 200, alignSelf: 'center', marginBottom:20}} />}
          <View style={{width: '100%', justifyContent: 'center', alignItems : 'center'}}>
          <MultipleSelectList 
-                setSelected={(val) => setSelected(val)} 
-                data={data} 
+                setSelected={(val) => setSelectedTags(val)} 
+                data={tags} 
                 save="value"
                 label="Categories"
                 placeholder='select clothing type'
@@ -105,23 +135,26 @@ function Upload({ navigation }) {
           <TextInput
           style={styles.input}
           placeholder="item brand"
+          onChangeText={setBrand}
+          value={brand}
           />
           <TextInput
           style={styles.input}
           placeholder="item size"
+          onChangeText={setSize}
+          value={size}
         />
         <TextInput
           style={styles.input}
           placeholder="cleaning preference"
+          onChangeText={setCleaningPref}
+          value={cleaningPref}
         />
 
           <Button
           buttonStyle= {styles.button}
           titleStyle={styles.buttonText}
-          title='upload' onPress={() =>
-          navigation.navigate('Explore')
-          }/>
-
+          title='upload' onPress={handleUpload}/>
          <Button
           buttonStyle= {styles.button}
           titleStyle={styles.buttonText}
@@ -169,3 +202,68 @@ const styles = StyleSheet.create({
 
 
 export default Upload;
+
+
+    // const uploadImage = async () => {
+    //   const file = image.substring(image.lastIndexOf('/') + 1);
+    //   setFilename(file);
+    //   const storageRef = ref(storage, 'items/'+file);
+    //   //convert iamge to array of bytes
+    //   const img = await fetch(image);
+    //   const bytes = await img.blob();
+    //   await uploadBytes(storageRef, bytes);
+    //   // return filename
+    // }
+
+    // const uploadPost = async (uid) => {
+    //   try {
+    //     const docReff = await addDoc(collection(db, "groups", group, "posts"), {
+    //       size: size,
+    //       brand: brand,
+    //       cleaningPref: cleaningPref,
+    //       owner: '/users/'.concat(uid),
+    //       tags: selectedTags, 
+    //       imagePath: 'items/'+filename
+    //     });
+    //     setDocRef(docReff);
+    //     console.log("new post document written with id", docReff.id);
+    //   } catch (e) {
+    //     console.error("Error writing post document: ", e);
+    //   }
+    // }
+    
+
+    // const updateUser = async (uid) => {
+    //   try {
+    //     const userRef = doc(db, "users", uid);
+    //     console.log(userRef)
+    //     await updateDoc(userRef, {
+    //       posts: arrayUnion(docRef)
+    //     });
+    //     console.log("user update written");
+    //   } catch (e) {
+    //     console.error("Error updating user document: ", e);
+    //   }
+    // }
+
+    // const handleUpload = () => {
+    //   const auth = getAuth();
+    //   const user = auth.currentUser;
+    //   if (user) {
+    //     // User is signed in, see docs for a list of available properties
+    //     // https://firebase.google.com/docs/reference/js/auth.user
+    //     const uid = user.uid;
+    //     console.log("user signed in with id", uid)
+    //     uploadImage();
+    //     uploadPost(uid);
+    //     updateUser(uid);
+    //   } else {
+    //     console.log("user not signed in");
+    //   }      
+    //   setImage(null);
+    //   setSelectedTags([]);
+    //   setSize(null);
+    //   setBrand(null);
+    //   setCleaningPref(null);
+    //   navigation.navigate('Explore');
+    // }

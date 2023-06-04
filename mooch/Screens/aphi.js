@@ -6,29 +6,11 @@ import React, {useState} from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
 import { FAB } from '@rneui/themed';
 import { color } from 'react-native-reanimated';
+import { useRoute } from "@react-navigation/native"
+import { db, collection, getDocs} from "../firebase/firebaseConfig";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-const all_clothes = [
-    { source: require("../clothes_images/swirltop.jpeg"),
-        width: 160,
-        height: 220,
-        id: '7',
-        text: 'Adika (S)', 
-        clothingType: 'Shirt',
-        washingPref: 'I wash it after you return it' ,
-        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}] },
-    { source: require("../clothes_images/denimtop.jpeg"),
-        width: 160,
-        height: 280,
-        id: '9',
-        text: 'Amazon (S)' ,
-        tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}]  },
-    { source: require("../clothes_images/blackstrappydress.jpeg"),
-        width: 160,
-        height: 280,
-        id: '10',
-        text: 'TigerMist (S)',
-        tags: [{name: 'All', id: '0'}, {name: 'Dresses', id: '1'}]   }
-];
+
 
 const categories = [
   { text: 'All',
@@ -48,10 +30,69 @@ const categories = [
 ]
 
 
+const all_clothes = [
+  { source: require("../clothes_images/swirltop.jpeg"),
+      width: 160,
+      height: 220,
+      id: '7',
+      text: 'Adika (S)', 
+      clothingType: 'Shirt',
+      washingPref: 'I wash it after you return it' ,
+      tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}] },
+  { source: require("../clothes_images/denimtop.jpeg"),
+      width: 160,
+      height: 280,
+      id: '9',
+      text: 'Amazon (S)' ,
+      tags: [{name: 'All', id: '0'}, {name: 'Tops', id: '1'}]  },
+  { source: require("../clothes_images/blackstrappydress.jpeg"),
+      width: 160,
+      height: 280,
+      id: '10',
+      text: 'TigerMist (S)',
+      tags: [{name: 'All', id: '0'}, {name: 'Dresses', id: '1'}]   }
+];
+
+
 function Aphi({ navigation }) {
+    const group = 'Aphi';
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const [modalItem, setModalItem] = React.useState(null);
     const [filterCategory, setFilterCategory] = React.useState('All');
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    // let all_clothes = [];
+    const heights = [280, 220];
+
+    const getData = async () => {
+      if (user) {
+        // const q = query(collection(db, "cities"), where("capital", "==", true)); -> can try this for filtering
+        let data = [];
+        const q = await getDocs(collection(db, "groups", group, "posts"));
+        q.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          let newItem = doc.data();
+          newItem.id = doc.id;
+          // newItem.source = do something here
+          newItem.width = 160;
+          newItem.height = heights[Math.floor(Math.random()*heights.length)];
+          data.push(newItem)
+        });
+        console.log(data);
+
+      } else {
+        console.log("user not signed in");
+      }    
+    }
+
+    // getData();
+
+
+
+
+
     let clothes = all_clothes.filter(item => {
       return item.tags.some(tag => filterCategory === tag.name);    
     })
@@ -181,7 +222,7 @@ function Aphi({ navigation }) {
             icon={{ name: 'add', color: 'white' }}
             color="#e8def9"
             placement="right"
-            onPress={() => navigation.navigate('Upload')}
+            onPress={() => navigation.navigate('Upload', {group: group})}
         />
         </SafeAreaView>
     )
