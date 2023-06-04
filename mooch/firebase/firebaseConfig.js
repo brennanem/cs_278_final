@@ -1,7 +1,9 @@
 // Import the functions you need from the SDKs you need
+// import * as firebase from 'firebase';
 import { initializeApp } from 'firebase/app';
 import { getAuth, initializeAuth, browserLocalPersistence } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, doc, addDoc, setDoc , updateDoc, arrayUnion, onSnapshot, getDocs } from "firebase/firestore";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -16,14 +18,18 @@ const firebaseConfig = {
   storageBucket: "mooch-65f87.appspot.com",
   messagingSenderId: "112146305733",
   appId: "1:112146305733:web:699568a71dbd72ded416ac",
-  measurementId: "G-N0417L2WLJ"
+  measurementId: "G-N0417L2WLJ",
 };
-
+// storageBucket: "gs://mooch-65f87.appspot.com"
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = initializeAuth(app, {
   persistence: browserLocalPersistence,
 });
 const db = getFirestore(app);
+const storage = getStorage(app);
+const itemsRef = ref(storage, 'items');
+const profilePicsRef = ref(storage, 'profilePictures');
+// const storage = getStorage(firebaseApp, "gs://my-custom-bucket");
 
-export { auth, db };
+export { app, auth, db, storage, getFirestore, collection, doc, addDoc, setDoc, updateDoc, arrayUnion, ref, uploadBytes, onSnapshot, getDocs};

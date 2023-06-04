@@ -2,18 +2,50 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Image, Text, TextInput, View, SafeAreaView, KeyboardAvoidingView } from 'react-native';
 import { Button } from 'react-native-elements';
 import * as React from 'react';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebaseConfig"; // IMPORTANT: this ensures that getAuth is called before we use auth in this file
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { app, db , getFirestore, collection, doc, addDoc, setDoc , updateDoc} from "../firebase/firebaseConfig"; // IMPORTANT: this ensures that getAuth is called before we use auth in this file
 //import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 const staticImage = require("../icons/newlogo.png");
 
-
 function CreateAccount({ route, navigation }) {
   const [email, onChangeEmail] = React.useState('');
   const [password, onChangePassword] = React.useState('');
+  const [name, onChangeName] = React.useState('');
+
+  const authenticate = () => {
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log(`Created new user with id ${user.uid}!`);
+
+        const addNewUser = async (userUID) => {
+          try {
+            await setDoc(doc(db, "users", userUID), {
+              name: name,
+              email: email,
+            });
+            console.log("new user document updated id", userUID);
+          } catch (e) {
+            console.error("Error writing document: ", e);
+          }
+        }
+        addNewUser(user.uid);
+        navigation.navigate('Home', { userId: user.uid});
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(`errorCode ${errorCode} and errorMessage ${errorMessage}`);
+        // ..
+      });
+  }
+
     return(
       < KeyboardAvoidingView 
       behavior="padding"
@@ -27,6 +59,12 @@ function CreateAccount({ route, navigation }) {
             placeholder="email"
             onChangeText={onChangeEmail}
             value={email}
+            />
+            <TextInput
+            style={styles.input}
+            placeholder="display name"
+            onChangeText={onChangeName}
+            value={name}
             />
             {/* <TextInput
             style={styles.input}
@@ -45,7 +83,7 @@ function CreateAccount({ route, navigation }) {
             buttonStyle = {styles.button}
             titleStyle = {styles.buttonText}
             title='create account' 
-            onPress={() => authenticate(email, password, navigation)}
+            onPress={authenticate}
             />
         </KeyboardAvoidingView>
     )
@@ -53,25 +91,27 @@ function CreateAccount({ route, navigation }) {
 
 export default CreateAccount;
 
+// let newUser = {}
 
-// https://firebase.google.com/docs/auth/web/start#sign_up_new_users
-// consider having a firebase.js?
-function authenticate(email, password, navigation) {
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-      console.log(`Created new user with email ${email}!`);
-      navigation.navigate('Home', { userId: user.uid });
-      // ...
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(`errorCode ${errorCode} and errorMessage ${errorMessage}`);
-      // ..
-    });
-}
+// function authenticate(name, email, password, navigation) {
+//   createUserWithEmailAndPassword(auth, email, password)
+//     .then((userCredential) => {
+//       // Signed in 
+//       const user = userCredential.user;
+//       console.log(`Created new user with email ${email}!`);
+//       newUser.id = user.uid;
+//       newUser.name = name;
+//       newUser.email = email;
+//       navigation.navigate('Home', { userId: user.uid });
+//       // ...
+//     })
+//     .catch((error) => {
+//       const errorCode = error.code;
+//       const errorMessage = error.message;
+//       console.log(`errorCode ${errorCode} and errorMessage ${errorMessage}`);
+//       // ..
+//     });
+// }
 
 
 const styles = StyleSheet.create({

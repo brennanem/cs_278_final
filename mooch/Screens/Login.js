@@ -6,7 +6,7 @@ import { Button } from 'react-native-elements';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebaseConfig";
+import { auth } from "../firebase/firebaseConfig";
 
 const staticImage = require("../icons/newlogo.png");
 
@@ -52,6 +52,7 @@ function authenticate(email, password, navigation) {
     // Signed in 
     const user = userCredential.user;
     console.log(`Signed in user with email ${email}!`);
+    // console.log(user.uid);
     navigation.navigate('Home', { userId: user.uid });
     // ...
   })

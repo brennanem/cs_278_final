@@ -6,8 +6,36 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Modal from "react-native-modal";
 import { CheckBox } from 'react-native-elements'
-import Stars from 'react-native-stars';
+import {Stars} from 'react-native-stars';
 import { SelectList } from 'react-native-dropdown-select-list'
+// import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+
+// const auth = getAuth();
+// onAuthStateChanged(auth, (user) => {
+//   if (user) {
+//     // User is signed in, see docs for a list of available properties
+//     // https://firebase.google.com/docs/reference/js/auth.user
+//     const uid = user.uid;
+//     // ...
+//   } else {
+//     // User is signed out
+//     // ...
+//   }
+// });
+
+// //or
+// const auth = getAuth();
+// const user = auth.currentUser;
+
+// if (user) {
+//   // User is signed in, see docs for a list of available properties
+//   // https://firebase.google.com/docs/reference/js/auth.user
+//   // ...
+// } else {
+//   // No user is signed in.
+// }
+
 
 
 const allClothes = [

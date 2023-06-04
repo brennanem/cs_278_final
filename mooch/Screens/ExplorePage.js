@@ -4,6 +4,7 @@ import * as React from 'react';
 import MasonryList from '@react-native-seoul/masonry-list';
 import { FAB } from '@rneui/themed';
 import Modal from "react-native-modal";
+import { useRoute } from "@react-navigation/native"
 
 
 
@@ -196,7 +197,7 @@ function ExplorePage({ navigation }) {
             icon={{ name: 'add', color: 'white' }}
             color="#e8def9"
             placement="right"
-            onPress={() => navigation.navigate('Upload')}
+            onPress={() => navigation.navigate('Upload', {group: 'public'})}
         />
         </SafeAreaView>
     )
