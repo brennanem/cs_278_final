@@ -5,10 +5,19 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import DMpage from './DMpage';
+import { db } from "../firebaseConfig";
 
 // TO-DO: CHANGE DRAWERS TO DM CONVOS (AKA PPLS NAMES)
 
 function DMs({ navigation }) {
+
+    // // adding backend functionality 
+    // const messagesRef = db.collection('messages');
+    // const query = messagesRef.orderBy('createdAt').limit(25);
+
+    // // listen to data using react hook
+    // const [messages] = useCollectionData(query, {idfield: 'id'});
+
     const Drawer = createDrawerNavigator();
     return(
         <NavigationContainer independent={true}>

@@ -6,7 +6,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import Formals from './Formals';
 import Aphi from './Aphi';
 import ExplorePage from './ExplorePage';
-import Upload from './Upload';
+import NewGroup from './NewGroup';
+import { AddCircleOutlineIcon } from '@mui/icons-material/AddCircleOutline';
 
 function Explore({ navigation }) {
     const Drawer = createDrawerNavigator();
@@ -18,7 +19,13 @@ function Explore({ navigation }) {
             <Drawer.Screen name="Explore" component={ExplorePage} />
             <Drawer.Screen name="Aphi" component={Aphi} />
             <Drawer.Screen name="Formals" component={Formals} />
-            <Drawer.Screen name="Upload" component={Upload} />
+            <Drawer.Screen name="Create A New Group" component={NewGroup}
+                // options={{
+                //      () => (
+                //        <AddCircleOutlineIcon/>
+                //     ),
+                // }}
+            />
         </Drawer.Navigator>
       </NavigationContainer>
     )
