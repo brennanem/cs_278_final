@@ -4,7 +4,7 @@ import * as React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import Messages from './Messages';
-import { db } from "../firebaseConfig";
+import { db } from "../firebase/firebaseConfig";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { TextInput } from 'react-native-paper';
 

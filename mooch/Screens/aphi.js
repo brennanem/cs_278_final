@@ -102,7 +102,9 @@ function Aphi({ navigation }) {
             };
             // newClothes.push(itemData);
             // console.log("imageRef", imageRef);
-            setClothes(prev => [...prev, itemData]);
+            if ((filterCategory == 'all') || itemData.tags.includes(filterCategory)) {
+              setClothes(prev => [...prev, itemData]);
+            }
           });
           // console.log("new cloths", newClothes);
           // setClothes(prev => [...prev]+newClothes);
