@@ -5,7 +5,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import DMpage from './DMpage';
-import { db } from "../firebaseConfig";
+import DMing from './DMing';
 
 // TO-DO: CHANGE DRAWERS TO DM CONVOS (AKA PPLS NAMES)
 
@@ -22,8 +22,8 @@ function DMs({ navigation }) {
     return(
         <NavigationContainer independent={true}>
             <Drawer.Navigator>
-            <Drawer.Screen name="Kathryn" component={DMpage} />
-            <Drawer.Screen name="Christine" component={DMpage} />
+            <Drawer.Screen name="Kathryn" component={DMing} />
+            <Drawer.Screen name="Christine" component={DMing} />
         </Drawer.Navigator>
       </NavigationContainer>
     )

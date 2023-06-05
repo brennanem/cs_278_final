@@ -8,6 +8,7 @@ import Aphi from './Aphi';
 import ExplorePage from './ExplorePage';
 import NewGroup from './NewGroup';
 import { AddCircleOutlineIcon } from '@mui/icons-material/AddCircleOutline';
+import Upload from './Upload';
 
 function Explore({ navigation }) {
     const Drawer = createDrawerNavigator();
@@ -19,7 +20,8 @@ function Explore({ navigation }) {
             <Drawer.Screen name="Explore" component={ExplorePage} />
             <Drawer.Screen name="Aphi" component={Aphi} />
             <Drawer.Screen name="Formals" component={Formals} />
-            <Drawer.Screen name="Create A New Group" component={NewGroup}
+            <Drawer.Screen name="Create A New Group" component={NewGroup} />
+            <Drawer.Screen name="Upload" component={Upload}
                 // options={{
                 //      () => (
                 //        <AddCircleOutlineIcon/>

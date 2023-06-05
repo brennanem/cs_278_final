@@ -8,6 +8,8 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import DMs from './DMs';
 import Profile from './Profile';
 import Explore from './Explore';
+import DMing from './DMing';
+import DMpage from './DMpage';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -16,7 +18,7 @@ function Home({ route, navigation }) {
         <Tab.Navigator initialRouteName='Explore'>
             <Tab.Screen 
                 name="DMs" 
-                component={DMs}
+                component={DMing}
                 options={{
                     title: 'DMs',
                     tabBarIcon: ({size,focused,color}) => {
