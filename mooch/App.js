@@ -10,6 +10,7 @@ import Landing from './Screens/Landing';
 import CreateAccount from './Screens/CreateAccount';
 import Upload from './Screens/Upload';
 import RequestNotifications from './Screens/RequestNotifications';
+import Welcome from './Screens/Welcome';
 //import Explore from './Screens/Explore';
 
 const Stack = createNativeStackNavigator();
@@ -48,6 +49,11 @@ export default function App() {
         <Stack.Screen
           name='RequestNotifications'
           component={RequestNotifications}
+          options={{headerBackTitleVisible: false, headerTitle: "" }}
+        /> 
+        <Stack.Screen
+          name='Welcome'
+          component={Welcome}
           options={{headerBackTitleVisible: false, headerTitle: "" }}
         /> 
       </Stack.Navigator>

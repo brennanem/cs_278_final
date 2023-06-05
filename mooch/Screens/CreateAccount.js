@@ -35,7 +35,7 @@ function CreateAccount({ route, navigation }) {
           }
         }
         addNewUser(user.uid);
-        navigation.navigate('Home', { userId: user.uid});
+        navigation.navigate('Welcome', { userId: user.uid});
         // ...
       })
       .catch((error) => {
