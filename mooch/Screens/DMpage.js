@@ -6,15 +6,16 @@ import {NavigationContainer} from '@react-navigation/native';
 import Messages from './Messages';
 import { db } from "../firebase/firebaseConfig";
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { GiftedChat } from 'react-native-gifted-chat';
 
 function DMpage({ navigation }) {
 
     // adding backend functionality 
-    const messagesRef = db.collection('messages');
-    const query = messagesRef.orderBy('createdAt').limit(25);
+    // const messagesRef = db.collection('messages');
+    // const query = messagesRef.orderBy('createdAt').limit(25);
 
     // listen to data using react hook
-    const [messages] = useCollectionData(query, {idfield: 'id'});
+    // const [messages] = useCollectionData(query, {idfield: 'id'});
 
     const Drawer = createDrawerNavigator();
     return(
