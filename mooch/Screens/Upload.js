@@ -11,6 +11,7 @@ import { MultipleSelectList } from 'react-native-dropdown-select-list'
 import { BottomNavigation } from 'react-native-paper';
 import { app, db , storage, getFirestore, collection, doc, addDoc, setDoc , updateDoc, arrayUnion, ref, uploadBytes} from "../firebase/firebaseConfig";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import DropDownPicker from 'react-native-dropdown-picker';
 
 
 
@@ -28,6 +29,16 @@ function Upload({ navigation }) {
     const [docRef, setDocRef] = React.useState(null);// cleaning
     const [filename, setFilename] = React.useState(null);// cleaning
     // const [cleaningPref, setCleaningPref] = React.useState(null);// cleaning
+
+
+    //for dropdown picker
+    const [typeOpen, setTypeOpen] = useState(false);
+    const [typeItems, setTypeItems] = useState([
+      {label: 'machine wash before returning', value: 'machine wash'},
+      {label: 'hand wash before returning', value: 'hand wash'},
+      {label: 'dry clean before returning', value: 'dry clean'},
+      {label: 'return without cleaning', value: 'no clean '},
+    ]);
 
 
   
@@ -161,11 +172,20 @@ function Upload({ navigation }) {
           onChangeText={setSize}
           value={size}
         />
-        <TextInput
+        {/* <TextInput
           style={styles.input}
           placeholder="cleaning preference"
           onChangeText={setCleaningPref}
           value={cleaningPref}
+        /> */}
+       <DropDownPicker style= {styles.input}
+          open={typeOpen}
+          value={cleaningPref}
+          items={typeItems}
+          setOpen={setTypeOpen}
+          setItems={setTypeItems}
+          setValue={setCleaningPref}
+          placeholder="cleaning preference"
         />
 
           <Button
@@ -194,6 +214,7 @@ const styles = StyleSheet.create({
       padding: 10,
       borderRadius: 15,
       alignSelf: 'center',
+      backgroundColor:  '#f7f4fd', 
     },
     button: {
       backgroundColor:  '#e8def9', 
