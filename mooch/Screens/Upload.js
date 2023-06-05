@@ -51,40 +51,57 @@ function Upload({ navigation }) {
 
         const uploadImage = async () => {
           const filename = image.substring(image.lastIndexOf('/') + 1);
-          const storageRef = ref(storage, 'items/'+filename);
+          const imagePath = 'groupImages/'+group+"/"+filename;
+          const storageRef = ref(storage, imagePath);
           //convert iamge to array of bytes
-          const img = await fetch(image);
-          const bytes = await img.blob();
-          await uploadBytes(storageRef, bytes);
-          const uploadPost = async () => {
-            try {
-              const docRef = await addDoc(collection(db, "groups", group, "posts"), {
-                size: size,
-                brand: brand,
-                cleaningPref: cleaningPref,
-                owner: '/users/'.concat(uid),
-                tags: selectedTags, 
-                imagePath: 'items/'+filename
-              });
-              console.log("new post document written with id", docRef.id);
-              const updateUser = async () => {
-                try {
-                  const userRef = doc(db, "users", uid);
-                  console.log(userRef)
-                  await updateDoc(userRef, {
-                    posts: arrayUnion(docRef)
-                  });
-                  console.log("user update written");
-                } catch (e) {
-                  console.error("Error updating user document: ", e);
+          console.log("selected tags", selectedTags.toString())
+          const metadata = {
+            customMetadata: {
+              'size': size.toString(),
+              'brand': brand.toString(),
+              'cleaningPref': cleaningPref.toString(),
+              'owner': '/users/'.concat(uid),
+              'tags': selectedTags.toString(), 
+              'imagePath': imagePath 
+            }           
+          };
+          try {
+            const img = await fetch(image);
+            const bytes = await img.blob();
+            await uploadBytes(storageRef, bytes, metadata);
+            console.log("image uploaded");
+            const uploadPost = async () => {
+              try {
+                const docRef = await addDoc(collection(db, "groups", group, "posts"), {
+                  size: size.toString(),
+                  brand: brand.toString(),
+                  cleaningPref: cleaningPref.toString(),
+                  owner: '/users/'.concat(uid),
+                  tags: selectedTags, 
+                  imagePath: imagePath           
+                });
+                console.log("new post document written with id", docRef.id);
+                const updateUser = async () => {
+                  try {
+                    const userRef = doc(db, "users", uid);
+                    console.log(userRef)
+                    await updateDoc(userRef, {
+                      posts: arrayUnion(docRef)
+                    });
+                    console.log("user update written");
+                  } catch (e) {
+                    console.error("Error updating user document: ", e);
+                  }
                 }
+                updateUser();
+              } catch (e) {
+                console.error("Error writing post document: ", e);
               }
-              updateUser();
-            } catch (e) {
-              console.error("Error writing post document: ", e);
             }
+            uploadPost();
+          } catch (e) {
+            console.error("Error uploading image: ", e);
           }
-          uploadPost();
         };
         uploadImage();
       } else {

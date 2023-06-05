@@ -6,6 +6,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import DMpage from './DMpage';
 import DMing from './DMing';
+import { db } from "../firebase/firebaseConfig";
 
 // TO-DO: CHANGE DRAWERS TO DM CONVOS (AKA PPLS NAMES)
 
