@@ -9,8 +9,7 @@ import { color } from 'react-native-reanimated';
 import { useRoute } from "@react-navigation/native"
 import { db, collection, getDocs, ref, storage, getDownloadURL, getMetadata, listAll} from "../firebase/firebaseConfig";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
-
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const categories = [
   { text: 'all',
@@ -70,10 +69,45 @@ function Aphi({ navigation }) {
     const [modalItem, setModalItem] = useState(null);
     const [filterCategory, setFilterCategory] = useState('all');
     const [clothes, setClothes] = useState([]);
+    const [startDate, setstartDate] = React.useState(''); //these variables get populated with startDate and endDate!
+    const [endDate, setendDate] = React.useState('');
+
+
 
     const auth = getAuth();
     const user = auth.currentUser;
 
+    // https://github.com/mmazzarolo/react-native-modal-datetime-picker
+    const [isTimePickerVisibleStart, setTimePickerVisibilityStart] = useState(false);
+
+    const [isTimePickerVisibleEnd, setTimePickerVisibilityEnd] = useState(false);
+
+    const showTimePickerStart = () => {
+      setTimePickerVisibilityStart(true);
+    };
+    const showTimePickerEnd = () => {
+      setTimePickerVisibilityEnd(true);
+    };
+    const hideTimePickerStart = () => {
+      setTimePickerVisibilityStart(false);
+    };
+    const hideTimePickerEnd = () => {
+      setTimePickerVisibilityEnd(false);
+    };
+    const handleConfirmStart = (date) => {
+      hideTimePickerStart();
+      setstartDate(date)
+      console.warn("A start date has been picked: ", startDate); // datetime format
+    };
+    const handleConfirmEnd = (date) => {
+      hideTimePickerEnd();
+      setendDate(date)
+      console.warn("An end date has been picked: ", endDate); // datetime format
+    };
+
+
+
+      
     // let all_clothes = [];
     const heights = [280, 220];
 
@@ -201,7 +235,6 @@ function Aphi({ navigation }) {
       setFilterCategory(item.text);
   };
     const handleModal = () => {
-    
         setIsModalVisible(!isModalVisible);
     };
     const Item = ({item}) => (
@@ -209,7 +242,6 @@ function Aphi({ navigation }) {
           <Pressable onPress={() => {
             setModalItem(item)
             handleModal();
-
             }
           }>
             <Image
@@ -253,9 +285,9 @@ function Aphi({ navigation }) {
                         <Image
                         source={modalItem?.source}
                         style={{
-                            height: modalItem?.height * 1.5,
+                            height: modalItem?.height * 1,
                             alignSelf: 'center',
-                            width: modalItem?.width * 1.5,
+                            width: modalItem?.width * 1,
                             borderRadius: 7,
                             borderColor: 'grey',
                         }}
@@ -273,6 +305,48 @@ function Aphi({ navigation }) {
                         <Text style={{fontSize: 15,
                                 color: '#5A5A5A', 
                                 alignSelf: 'center',}}><Text style={{ fontWeight: 'bold' }}>Wash preference:</Text> {modalItem?.washingPref}</Text>
+                        
+                        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+                          <DateTimePickerModal
+                                  isVisible={isTimePickerVisibleStart}
+                                  mode='date'
+                                  onConfirm={handleConfirmStart}
+                                  onCancel={hideTimePickerStart}
+                                  isDarkModeEnabled={true}
+                                />
+                         <DateTimePickerModal
+                                  isVisible={isTimePickerVisibleEnd}
+                                  mode='date'
+                                  onConfirm={handleConfirmEnd}
+                                  onCancel={hideTimePickerEnd}
+                                  isDarkModeEnabled={true}
+                                />
+                          <Button 
+                                  buttonStyle= {{backgroundColor:  '#e8def9', 
+                                  borderColor: '#f5dceb',
+                                  width: '70%',
+                                  borderWidth: 0,
+                                  borderRadius: 15,       
+                                  alignSelf: 'center',
+                                  padding: 10,}} 
+                              titleStyle={{ color:'#5A5A5A' }} 
+                                  title="start date"
+                                  onPress={showTimePickerStart}
+                                  />
+                        <Button 
+                                  buttonStyle= {{backgroundColor:  '#e8def9', 
+                                  borderColor: '#f5dceb',
+                                  width: '70%',
+                                  borderWidth: 0,
+                                  borderRadius: 15,       
+                                  alignSelf: 'center',
+                                  padding: 10,}} 
+                              titleStyle={{ color:'#5A5A5A' }} 
+                                  title="end date"
+                                  onPress={showTimePickerEnd}
+                                  />
+                        </View> 
+                        
                         <Button buttonStyle={{backgroundColor:  '#e8def9', 
                                                 borderColor: '#f5dceb',
                                                 width: '50%',
@@ -328,8 +402,14 @@ function Aphi({ navigation }) {
     )
 }
 
-
 export default Aphi;
+
+
+// //handle date confirmation
+// const handleConfirm = (date) => {
+//   console.warn("A date has been picked: ", date); // note that this time will have the current date associated with it
+//   hideTimePicker();
+// };
 
 /* <TouchableOpacity activeOpacity={0.5} onPress={this.SampleFunction} style={styles.TouchableOpacityStyle} >
 <Image 
