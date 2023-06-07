@@ -17,7 +17,7 @@ function Explore({ navigation }) {
             <Drawer.Navigator 
                 screenOptions={
                     {drawerActiveBackgroundColor: "#f3eef6"}}>
-            <Drawer.Screen name="Explore" component={ExplorePage} />
+            {/* <Drawer.Screen name="Explore" component={ExplorePage} /> */}
             <Drawer.Screen name="Aphi" component={Aphi} />
             <Drawer.Screen name="Formals" component={Formals} />
             <Drawer.Screen name="Create A New Group" component={NewGroup} />

@@ -2,7 +2,7 @@
 // import * as firebase from 'firebase';
 import { initializeApp } from 'firebase/app';
 import { getAuth, initializeAuth, browserLocalPersistence } from "firebase/auth";
-import { getFirestore, collection, doc, addDoc, setDoc , updateDoc, arrayUnion, onSnapshot, getDocs } from "firebase/firestore";
+import { getFirestore, collection, doc, addDoc, setDoc , updateDoc, arrayUnion, onSnapshot, getDocs , getDoc, arrayRemove, getCountFromServer, deleteDoc} from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, getMetadata, listAll } from "firebase/storage";
 
 
@@ -32,4 +32,4 @@ const itemsRef = ref(storage, 'items');
 const profilePicsRef = ref(storage, 'profilePictures');
 // const storage = getStorage(firebaseApp, "gs://my-custom-bucket");
 
-export { app, auth, db, storage, getFirestore, collection, doc, addDoc, setDoc, updateDoc, arrayUnion, ref, uploadBytes, onSnapshot, getDocs, getDownloadURL, getMetadata, listAll};
+export { app, auth, db, storage, getFirestore, collection, doc, addDoc, setDoc, updateDoc, arrayUnion, ref, uploadBytes, onSnapshot, getDocs, getDownloadURL, getMetadata, listAll, getDoc, arrayRemove, getCountFromServer, deleteDoc};

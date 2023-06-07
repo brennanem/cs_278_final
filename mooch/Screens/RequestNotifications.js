@@ -1,44 +1,135 @@
 import { StatusBar } from 'expo-status-bar';
 // import * as React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useRoute} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, Image, FlatList, SafeAreaView, Pressable, Button } from 'react-native'
 import { requestFrame } from 'react-native-reanimated/lib/reanimated2/core';
 import Modal from "react-native-modal";
-
-const data = [
-  { id: 1, name: 'Kathryn', dates: '06/01-06/03', rating: '5', itemImage: require("../clothes_images/bluedress.jpeg"), userIcon: require("../icons/notificationaccounticon.png"), description: 'Kathryn has requested to borrow an item, click to view request.' },
-  { id: 2, name: 'Kathryn', dates: '06/01-06/03',  rating: '5', itemImage: require("../clothes_images/bluedress.jpeg"), userIcon: require("../icons/notificationaccounticon.png"), description: 'Kathryn has requested to borrow an item, click to view request.' },
-  { id: 3, name: 'Christine', dates: '06/01-06/03',  rating: '4.95', itemImage: require("../clothes_images/bluedress.jpeg"), userIcon: require("../icons/notificationaccounticon.png"), description: 'Christine has requested to borrow an item, click to view request.' },
-  { id: 4, name: 'Claire', dates: '06/01-06/03',  rating: '4', itemImage: require("../clothes_images/bluedress.jpeg"), userIcon: require("../icons/notificationaccounticon.png"), description: 'Claire has requested to borrow an item, click to view request.' },
-  { id: 5, name: 'Alex', dates: '06/01-06/03',  rating: '3.8', itemImage: require("../clothes_images/bluedress.jpeg"), userIcon: require("../icons/notificationaccounticon.png"), description: 'Alex has requested to borrow an item, click to view request.' },
-  { id: 6, name: 'Jared', dates: '06/01-06/03',  rating: '4.9', itemImage: require("../clothes_images/bluedress.jpeg"), userIcon: require("../icons/notificationaccounticon.png"), description: 'Jared has requested to borrow an item, click to view request.' },
-]
-
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { db , storage, getDoc, doc, getDownloadURL, setDoc , getDocs, updateDoc, arrayUnion, arrayRemove, ref, collection, deleteDoc} from "../firebase/firebaseConfig";
 
 
 function RequestNotifications({ navigation }) {
-    const [notifications, setNotifications] = useState(data)
+    const [notifications, setNotifications] = useState([])
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const [modalItem, setModalItem] = React.useState(null);
-
+    const [rawNotifs, setRawNotifs] = React.useState(null);
+    
     const handleModal = () => {
         setIsModalVisible(!isModalVisible);
     };
 
-    const handlePress = () => {
-        console.log("pressed!");
-        let newData = notifications.filter(item => {
-            return item.id !== modalItem.id;    
-          });
-        setNotifications(newData);
-        handleModal()
-    };
+    const handleReject = async (notification) => {
+      //get id for main user
+      const uid = getAuth().currentUser.uid;
+      const docId = notification.id;
+      //remove requsts from user's doc
+      await deleteDoc(doc(db, "users", uid, "requests", docId));
+      //remove request from notifications
+      const newNotifs = notifications.filter((item) => {
+        return item.id != docId
+      })
+      setNotifications(newNotifs);
+      handleModal();
+    }
+
+    const handleAccept = async (notification) => {
+      //get id for main user
+      const uid = getAuth().currentUser.uid;
+      const docId = notification.id;
+      const requestDoc = await getDoc(doc(db, "users", uid, "requests", docId))
+      const post = requestDoc.get("post");
+      const requestUserUid = notification.userId;
+
+      //put item in requesting user's borrowing
+      const requestUserDoc = await getDoc(doc(db, "users", requestUserUid))
+      let borrowing = requestUserDoc.get('borrowing')
+      if (borrowing) {
+        borrowing.push(post);
+      } else {
+        borrowing = [post];
+      }
+      await updateDoc(doc(db, "users", requestUserUid), {
+        borrowing: borrowing
+      });
+
+      //put item in main user being borrowed
+      const userDoc = await getDoc(doc(db, "users", uid))
+      let beingBorrowed = userDoc.get('beingBorrowed')
+      if (beingBorrowed) {
+        beingBorrowed.push(post);
+      } else {
+        beingBorrowed = [post];
+      }
+      await updateDoc(doc(db, "users", uid), {
+        beingBorrowed: beingBorrowed
+      });
+
+      //remove requsts from user's doc
+      await deleteDoc(doc(db, "users", uid, "requests", docId));
+      //remove request from notifications
+      const newNotifs = notifications.filter((item) => {
+        return item.id != docId
+      })
+      setNotifications(newNotifs);
+      handleModal();
+    }
+
+    const processNotification = async (request) => {
+      const userPath = request.get('user').path.split("/")
+      // console.log('userpath', userPath)
+      const currUser = await getDoc(doc(db, userPath[0], userPath[1]));
+      // console.log('curr user', currUser.data())
+      const currPost = await getDoc(request.get('post'));
+      // console.log('currPost', currPost.data())
+      const postImagePath = currPost.get("imagePath");
+      // console.log('postImagePath', postImagePath)
+      const itemUrl = await getDownloadURL(ref(storage, postImagePath));
+      // console.log('itemUrl', itemUrl)
+      const userPicPath = currUser.get('profilePicPath');
+      // console.log('userPicPath', userPicPath)
+      const fromDate = new Date(request.get('dateRange').from.toDate());
+      const toDate = new Date(request.get('dateRange').to.toDate());
+      const dateRange = fromDate.getMonth()+"/"+fromDate.getDate()+" - "+toDate.getMonth()+"/"+toDate.getDate()
+      // console.log('dateRange', dateRange)
+      return {
+        id: request.id,
+        userId: currUser.id,
+        name: currUser.get("name"),
+        dates: dateRange,
+        rating: currUser.get("rating") ? currUser.get("rating") : 'No rating',
+        itemImage: {uri : itemUrl},
+        userIcon: userPicPath ? {uri : await getDownloadURL(ref(storage, userPicPath))} : require("../icons/notificationaccounticon.png"),
+      }
+    }
+    const getNotifications = async () => {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        const uid = user.uid;
+        const requestsColl = await getDocs(collection(db, "users", uid, 'requests'));
+        requestsColl.forEach( async (requestDoc) => {
+          const newItem = await processNotification(requestDoc);
+          console.log('newitem', newItem);
+          if (!(notifications.some(item => item.id === newItem.id))) {
+            setNotifications((prevNotifications) => [...prevNotifications, newItem]);
+          }
+        });
+      } else {
+        console.log("user not signed in");
+      }  
+    }
+
+    useEffect( () => {
+      getNotifications();
+    }, []);
 
     return (
       <View style={styles.container}>
+        {!notifications && <Text>No current notifications</Text>}
+        {notifications && <View style={styles.container}>
         <Modal isVisible={isModalVisible}>
             <View style={styles.modalStyle}>
                 <View>
@@ -69,16 +160,16 @@ function RequestNotifications({ navigation }) {
                     <View style={styles.modalIconContainer}>
                     <Image
                     source={modalItem?.itemImage}
-                    style={{width: 180, height: 230}}
+                    style={{width: 180, height: 230, borderRadius: 5}}
                     />
                     </View>
                     <View style={styles.modalIconContainer}>
                     <Text style={{fontSize: 19, color: '#5A5A5A'}}>{"from ".concat(modalItem?.dates)}</Text>
                     </View>
-                    <Pressable style={styles.modalButtonContainer} onPress={handlePress}>
+                    <Pressable style={styles.modalButtonContainer} onPress={() => {handleAccept(modalItem)}}>
                     <Text style={{fontSize: 19, color: '#5A5A5A'}}>accept</Text>
                     </Pressable>
-                    <Pressable style={styles.modalButtonContainer} onPress={handlePress}>
+                    <Pressable style={styles.modalButtonContainer} onPress={() => {handleReject(modalItem)}}>
                     <Text style={{fontSize: 19, color: '#5A5A5A'}}>reject</Text>
                     </Pressable>
                     <Pressable style={styles.modalButtonContainer} onPress={() => navigation.navigate('DMs')}>
@@ -106,13 +197,14 @@ function RequestNotifications({ navigation }) {
                 />
                 </View>
                 <View style={styles.textContainer}>
-                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.description}>{item.name+" has requested to borrow an item, click to view request."}</Text>
                 </View>
                 </SafeAreaView>
                 </Pressable>
             )
           }}
         />
+        </View>}
       </View>
     )
   }
