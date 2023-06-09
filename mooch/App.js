@@ -41,15 +41,15 @@ export default function App() {
           component={CreateAccount}
           options={{headerBackTitle: "Back"}}
         /> 
-        <Stack.Screen
+        {/* <Stack.Screen
           name='Upload'
           component={Upload}
           options={{headerBackTitle: "Back"}}
-        /> 
+        />  */}
         <Stack.Screen
           name='RequestNotifications'
           component={RequestNotifications}
-          options={{headerBackTitleVisible: false, headerTitle: "" }}
+          options={{headerBackTitleVisible: false, headerTitle: "Requests" }}
         /> 
         <Stack.Screen
           name='Welcome'

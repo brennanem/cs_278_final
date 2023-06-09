@@ -28,6 +28,7 @@ function Upload({ navigation }) {
     const [cleaningPref, setCleaningPref] = React.useState(null);// cleaning
     const [docRef, setDocRef] = React.useState(null);// cleaning
     const [filename, setFilename] = React.useState(null);// cleaning
+
     // const [cleaningPref, setCleaningPref] = React.useState(null);// cleaning
 
 
@@ -51,80 +52,80 @@ function Upload({ navigation }) {
         {key:'6', value:'shoes'},
     ]
 
-    const handleUpload = () => {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
-        const uid = user.uid;
-        console.log("user signed in with id", uid)
+    // const handleUpload = () => {
+    //   const auth = getAuth();
+    //   const user = auth.currentUser;
+    //   if (user) {
+    //     // User is signed in, see docs for a list of available properties
+    //     // https://firebase.google.com/docs/reference/js/auth.user
+    //     const uid = user.uid;
+    //     console.log("user signed in with id", uid)
 
-        const uploadImage = async () => {
-          const filename = image.substring(image.lastIndexOf('/') + 1);
-          const imagePath = 'groupImages/'+group+"/"+filename;
-          const storageRef = ref(storage, imagePath);
-          //convert iamge to array of bytes
-          console.log("selected tags", selectedTags.toString())
-          const metadata = {
-            customMetadata: {
-              'size': size.toString(),
-              'brand': brand.toString(),
-              'cleaningPref': cleaningPref.toString(),
-              'owner': '/users/'.concat(uid),
-              'tags': selectedTags.toString(), 
-              'imagePath': imagePath 
-            }           
-          };
-          try {
-            const img = await fetch(image);
-            const bytes = await img.blob();
-            await uploadBytes(storageRef, bytes, metadata);
-            console.log("image uploaded");
-            const uploadPost = async () => {
-              try {
-                const docRef = await addDoc(collection(db, "groups", group, "posts"), {
-                  size: size.toString(),
-                  brand: brand.toString(),
-                  cleaningPref: cleaningPref.toString(),
-                  owner: '/users/'.concat(uid),
-                  tags: selectedTags, 
-                  imagePath: imagePath           
-                });
-                console.log("new post document written with id", docRef.id);
-                const updateUser = async () => {
-                  try {
-                    const userRef = doc(db, "users", uid);
-                    console.log(userRef)
-                    await updateDoc(userRef, {
-                      posts: arrayUnion(docRef)
-                    });
-                    console.log("user update written");
-                  } catch (e) {
-                    console.error("Error updating user document: ", e);
-                  }
-                }
-                updateUser();
-              } catch (e) {
-                console.error("Error writing post document: ", e);
-              }
-            }
-            uploadPost();
-          } catch (e) {
-            console.error("Error uploading image: ", e);
-          }
-        };
-        uploadImage();
-      } else {
-        console.log("user not signed in");
-      }      
-      setImage(null);
-      setSelectedTags([]);
-      setSize(null);
-      setBrand(null);
-      setCleaningPref(null);
-      navigation.navigate('Explore');
-    }
+    //     const uploadImage = async () => {
+    //       const filename = image.substring(image.lastIndexOf('/') + 1);
+    //       const imagePath = 'groupImages/'+group+"/"+filename;
+    //       const storageRef = ref(storage, imagePath);
+    //       //convert iamge to array of bytes
+    //       console.log("selected tags", selectedTags.toString())
+    //       const metadata = {
+    //         customMetadata: {
+    //           'size': size.toString(),
+    //           'brand': brand.toString(),
+    //           'cleaningPref': cleaningPref.toString(),
+    //           'owner': '/users/'.concat(uid),
+    //           'tags': selectedTags.toString(), 
+    //           'imagePath': imagePath 
+    //         }           
+    //       };
+    //       try {
+    //         const img = await fetch(image);
+    //         const bytes = await img.blob();
+    //         await uploadBytes(storageRef, bytes, metadata);
+    //         console.log("image uploaded");
+    //         const uploadPost = async () => {
+    //           try {
+    //             const docRef = await addDoc(collection(db, "groups", group, "posts"), {
+    //               size: size.toString(),
+    //               brand: brand.toString(),
+    //               cleaningPref: cleaningPref.toString(),
+    //               owner: '/users/'.concat(uid),
+    //               tags: selectedTags, 
+    //               imagePath: imagePath           
+    //             });
+    //             console.log("new post document written with id", docRef.id);
+    //             const updateUser = async () => {
+    //               try {
+    //                 const userRef = doc(db, "users", uid);
+    //                 console.log(userRef)
+    //                 await updateDoc(userRef, {
+    //                   posts: arrayUnion(docRef)
+    //                 });
+    //                 console.log("user update written");
+    //               } catch (e) {
+    //                 console.error("Error updating user document: ", e);
+    //               }
+    //             }
+    //             updateUser();
+    //           } catch (e) {
+    //             console.error("Error writing post document: ", e);
+    //           }
+    //         }
+    //         uploadPost();
+    //       } catch (e) {
+    //         console.error("Error uploading image: ", e);
+    //       }
+    //     };
+    //     uploadImage();
+    //   } else {
+    //     console.log("user not signed in");
+    //   }      
+    //   setImage(null);
+    //   setSelectedTags([]);
+    //   setSize(null);
+    //   setBrand(null);
+    //   setCleaningPref(null);
+    //   navigation.navigate('Explore');
+    // }
 
 
   
