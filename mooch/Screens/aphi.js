@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Image, Pressable , ScrollView} from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, Pressable , ScrollView, KeyboardAvoidingView, TextInput} from 'react-native';
 import { Button } from 'react-native-elements';
 import Modal from "react-native-modal";
 import React, {useState, useEffect} from 'react';
@@ -10,24 +10,98 @@ import { useRoute } from "@react-navigation/native"
 import { db, collection, getDocs, ref, storage, getDownloadURL, getMetadata, listAll} from "../firebase/firebaseConfig";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DropDownPicker from 'react-native-dropdown-picker';
+//import {createDrawerNavigator} from '@react-navigation/drawer';
+import * as ImagePicker from 'expo-image-picker';
+import { MultipleSelectList } from 'react-native-dropdown-select-list'
+import { CollectionsOutlined, LeakAddTwoTone } from '@mui/icons-material';
 
 const categories = [
-  { text: 'all',
-      id: '0' },
-  { text: 'tops',
-      id: '1' },
-  { text: 'bottoms',
-      id: '2' },
-  { text: 'dresses',
-      id: '3' },
-  { text: 'accessories',
-      id: '4' },
-  { text: 'sets',
-      id: '5' },
-  { text: 'shoes',
-      id: '6' }
+  {key:'0', value:'all'},
+  {key:'1', value:'tops'},
+  {key:'2', value:'bottoms'},
+  {key:'3', value:'dresses'},
+  {key:'4', value:'accessories'},
+  {key:'5', value:'sets'},
+  {key:'6', value:'shoes'},
 ]
 
+const heights = [280, 220];
+
+let full_clothes = [
+    { source: require("../clothes_images/denimtop.jpeg"),
+    width: 160,
+    key:1,
+    height: heights[Math.floor(Math.random()*heights.length)],
+    id: '9',
+    text: 'Amazon (S)' ,
+    tags: [{name: 'all', id: '0', key:1}, {name: 'tops', id: '1', key:2}] },
+  { source: require("../clothes_images/blackstrappydress.jpeg"),
+    width: 160,
+    key:2,
+    height: heights[Math.floor(Math.random()*heights.length)],
+    id: '10',
+    text: 'TigerMist (S)' ,
+    tags: [{name: 'all', id: '0', key:1}, {name: 'dresses', id: '1', key:2}] },
+  { source: require("../clothes_images/blueoneshouldertop.jpeg"),
+      width: 160,
+      key:3,
+      height: heights[Math.floor(Math.random()*heights.length)],
+      id: '3',
+      text: 'LIONESS (M)',
+      tags: [{name: 'all', id: '0', key:1}, {name: 'tops', id: '1', key:2}]  },
+  { source: require("../clothes_images/chainmailtop.jpeg"),
+      width: 160,
+      height: heights[Math.floor(Math.random()*heights.length)],
+      id: '4',
+      key:4,
+      text: 'H&M (XS/S)' ,
+      tags: [{name: 'all', id: '0', key:1}, {name: 'tops', id: '1', key:2}] },
+  { source: require("../clothes_images/greendress.jpeg"),
+      width: 160,
+      height: heights[Math.floor(Math.random()*heights.length)],
+      id: '5',
+      key:5,
+      text: 'SHEIN (S)',
+      tags: [{name: 'all', id: '0', key:1}, {name: 'dresses', id: '1', key:2}]  },
+  { source: require("../clothes_images/redscarftop.jpeg"),
+      width: 160,
+      key:6,
+      height: heights[Math.floor(Math.random()*heights.length)],
+      id: '6',
+      text: 'PrincessPolly (6)' ,
+      tags: [{name: 'all', id: '0', key:1}, {name: 'tops', id: '1', key:2}] },
+  { source: require("../clothes_images/swirltop.jpeg"),
+      width: 160,
+      key:7,
+      height: heights[Math.floor(Math.random()*heights.length)],
+      id: '7',
+      text: 'Adika (S)',
+      tags: [{name: 'all', id: '0', key:1}, {name: 'tops', id: '1', key:2}]  },
+  { source: require("../clothes_images/yellowbralette.jpeg"),
+      width: 160,
+      height: heights[Math.floor(Math.random()*heights.length)],
+      id: '8',
+      key:8,
+      text: 'FreePeople (S)',
+      tags: [{name: 'all', id: '0', key:1}, {name: 'tops', id: '1', key:2}]  },
+      { source: require("../clothes_images/pinkpants.jpeg"),
+      width: 160,
+      height: heights[Math.floor(Math.random()*heights.length)],
+      id: '1',
+      key:9,
+      text: 'I AM GIA (S)',
+      tags: [{name: 'all', id: '0', key:1}, {name: 'bottoms', id: '1', key:2}] },
+  { source: require("../clothes_images/greenset.jpeg"),
+      width: 160,
+      height: heights[Math.floor(Math.random()*heights.length)],
+      id: '2',
+      key:10,
+      text: 'SHIEN (S)',
+      tags: [{name: 'all', id: '0', key:1}, {name: 'bottoms', id: '1', key:2}, {name: 'sets', id: '2', key:3}, {name: 'tops', id: '3', key:4}]  },
+];
+
+//bluedress.jpeg
 
 // const all_clothes = [
 //   { source: require("../clothes_images/swirltop.jpeg"),
@@ -62,16 +136,48 @@ const categories = [
 //   id: string;
 // };
 
+const cleaning_prefs = [
+  {label: 'machine wash before returning', value: 'machine wash', key:1},
+  {label: 'hand wash before returning', value: 'hand wash', key:2},
+  {label: 'dry clean before returning', value: 'dry clean', key:3},
+  {label: 'return without cleaning', value: 'no clean ', key:4},
+]
+
 
 function Aphi({ navigation }) {
+    const all_clothes = full_clothes.map((item) => {
+      item.cleaningPref = cleaning_prefs[Math.floor(Math.random()*cleaning_prefs.length)];
+      return item;
+    })
+    console.log(all_clothes)
     const group = 'Aphi';
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalItem, setModalItem] = useState(null);
     const [filterCategory, setFilterCategory] = useState('all');
-    const [clothes, setClothes] = useState([]);
+    const [clothes, setClothes] = useState(all_clothes);
     const [startDate, setstartDate] = React.useState(''); //these variables get populated with startDate and endDate!
     const [endDate, setendDate] = React.useState('');
+    const [isUploadVisible, setIsUploadVisible] = React.useState(false);
+    const [modalItemTags, setModalItemTags] = useState(null);
 
+    const [image, setImage] = useState(null);
+    // const [uploading, setUploading] = useState(false);
+    const [selectedTags, setSelectedTags] = React.useState([]); //tags
+    const [size, setSize] = React.useState(null);  //size
+    const [brand, setBrand] = React.useState(null); //brand
+    const [cleaningPref, setCleaningPref] = React.useState(null);// cleaning
+    const [docRef, setDocRef] = React.useState(null);// cleaning
+    const [filename, setFilename] = React.useState(null);// cleaning
+    // const [cleaningPref, setCleaningPref] = React.useState(null);// cleaning
+
+
+    //for dropdown picker
+    const [typeOpen, setTypeOpen] = useState(false);
+    const [typeItems, setTypeItems] = useState(cleaning_prefs);
+
+    const handleUploadVisible = () => {
+      setIsUploadVisible(!isUploadVisible);
+    }
 
 
     const auth = getAuth();
@@ -105,50 +211,61 @@ function Aphi({ navigation }) {
       console.warn("An end date has been picked: ", endDate); // datetime format
     };
 
-
-
+    const pickImage = async () => {
+      // No permissions request is necessary for launching the image library
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [7, 3],
+        quality: 1,
+      });  
+      if (!result.canceled) {
+        // console.log(result);
+        setImage(result.assets[0].uri);
+      }
+    };
       
     // let all_clothes = [];
-    const heights = [280, 220];
+    // const heights = [280, 220];
 
-    useEffect(() => {
-      const imagesRef = ref(storage, 'groupImages/'+group);
-      listAll(imagesRef)
-        .then((res) => {
-          setClothes([]);
-          // let newClothes = [];
-          res.items.forEach( async (imageRef) => {
-            const imagePath = imageRef.fullPath;
-            // console.log("imagePath", imagePath);
-            const url = await getDownloadURL(ref(storage, imagePath));
-            const metadata = await getMetadata(ref(storage, imagePath));
-            // console.log("metadata", metadata)
-            // .substring(0, url.lastIndexOf('.jpg')+4)
-            const itemData = {
-              id: imagePath.substring(imagePath.lastIndexOf('/') + 1),
-              text: metadata.customMetadata?.brand + " (" + metadata.customMetadata?.size + ")",
-              source: {uri : url} ,
-              cleaningPref: metadata.customMetadata?.cleaningPref,
-              owner: metadata.customMetadata?.owner,
-              tags: metadata.customMetadata?.tags.split(","),
-              width: 160,
-              height: heights[Math.floor(Math.random()*heights.length)]
-            };
-            // newClothes.push(itemData);
-            // console.log("imageRef", imageRef);
-            if ((filterCategory == 'all') || itemData.tags.includes(filterCategory)) {
-              setClothes(prev => [...prev, itemData]);
-            }
-          });
-          // console.log("new cloths", newClothes);
-          // setClothes(prev => [...prev]+newClothes);
-        })
-        .catch((error) => {
-          console.log("error", error)
-          // Uh-oh, an error occurred!
-        });
+    // useEffect(() => {
+    //   const imagesRef = ref(storage, 'groupImages/'+group);
+    //   listAll(imagesRef)
+    //     .then((res) => {
+    //       setClothes([]);
+    //       // let newClothes = [];
+    //       res.items.forEach( async (imageRef) => {
+    //         const imagePath = imageRef.fullPath;
+    //         // console.log("imagePath", imagePath);
+    //         const url = await getDownloadURL(ref(storage, imagePath));
+    //         const metadata = await getMetadata(ref(storage, imagePath));
+    //         // console.log("metadata", metadata)
+    //         // .substring(0, url.lastIndexOf('.jpg')+4)
+    //         const itemData = {
+    //           id: imagePath.substring(imagePath.lastIndexOf('/') + 1),
+    //           text: metadata.customMetadata?.brand + " (" + metadata.customMetadata?.size + ")",
+    //           source: {uri : url} ,
+    //           cleaningPref: metadata.customMetadata?.cleaningPref,
+    //           owner: metadata.customMetadata?.owner,
+    //           tags: metadata.customMetadata?.tags.split(","),
+    //           width: 160,
+    //           height: heights[Math.floor(Math.random()*heights.length)]
+    //         };
+    //         // newClothes.push(itemData);
+    //         // console.log("imageRef", imageRef);
+    //         if ((filterCategory == 'all') || itemData.tags.includes(filterCategory)) {
+    //           setClothes(prev => [...prev, itemData]);
+    //         }
+    //       });
+    //       // console.log("new cloths", newClothes);
+    //       // setClothes(prev => [...prev]+newClothes);
+    //     })
+    //     .catch((error) => {
+    //       console.log("error", error)
+    //       // Uh-oh, an error occurred!
+    //     });
 
-    }, []);
+    // }, []);
 
     // const getData = async () => {
     //   reference
@@ -229,18 +346,49 @@ function Aphi({ navigation }) {
     //   return item.tags.some(tag => filterCategory === tag.name);    
     // })
 
-    console.log("clothes", clothes)
+    // console.log("clothes", clothes)
     const handleFilterCategory = ({item}) => {
-    
-      setFilterCategory(item.text);
+      let filterName = item.value
+      setFilterCategory(filterName);
+      console.log("filtername", filterName)
+      console.log("clothes", clothes)
+      let filteredClothes = full_clothes.filter((e) => {
+        console.log("e", e)
+        return e.tags.some(tag => filterName === tag.name);    
+      })
+      console.log("filtered",filteredClothes);
+      setClothes(filteredClothes);
   };
     const handleModal = () => {
         setIsModalVisible(!isModalVisible);
     };
+
+    const handleUpload = () => {
+      let newItem = { source: require("../clothes_images/bluedress.jpeg"),
+        width: 160,
+        height: heights[Math.floor(Math.random()*heights.length)],
+        id: '11',
+        text: 'Lioness (M)',
+        key:11,
+        tags: [{name: 'all', id: '0'}, {name: 'dresses', id: '1'}],
+        cleaningPref:  {label: 'hand wash before returning', value: 'hand wash'}};
+        full_clothes.unshift(newItem);
+        setClothes(prev => [newItem, ...prev]);
+        setIsUploadVisible(false);
+    }
+
+
     const Item = ({item}) => (
         <View key={item.id} style={{marginTop: 12, flex: 1}}>
           <Pressable onPress={() => {
-            setModalItem(item)
+            let itemTagsTemp = item.tags.filter((e) => {
+              return e.name != 'all';
+            })
+            let itemTags = itemTagsTemp.map((e) => {
+              return e.name;
+            })
+            setModalItem(item);
+            setModalItemTags(itemTags);
             handleModal();
             }
           }>
@@ -268,17 +416,19 @@ function Aphi({ navigation }) {
           </Text>
         </View>
       );
+
+    console.log(categories)
     return(
         <SafeAreaView style={styles.background}>
           <View style={styles.filterContainer}>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
               {categories.map((item) => (
               <Pressable style={styles.filterButton} key={item.id} onPress={() => handleFilterCategory({item})}>
-                <Text style={styles.filterText}>{item.text}</Text>
+                <Text style={styles.filterText}>{item.value}</Text>
               </Pressable>
             ))}     
             </ScrollView>
-          </View>
+           </View> 
             <Modal isVisible={isModalVisible}>
                 <View style={styles.modalStyle}>
                     <>
@@ -301,10 +451,10 @@ function Aphi({ navigation }) {
                                 }}>{modalItem?.text}</Text>
                         <Text style={{fontSize: 15,
                                 color: '#5A5A5A', 
-                                alignSelf: 'center',}}><Text style={{ fontWeight: 'bold' }}>Type:</Text> {modalItem?.clothingType}</Text>
+                                alignSelf: 'center',}}><Text style={{ fontWeight: 'bold', textAlign: 'center' }}>Type:</Text> {modalItemTags ? modalItemTags.toString() : ''}</Text>
                         <Text style={{fontSize: 15,
                                 color: '#5A5A5A', 
-                                alignSelf: 'center',}}><Text style={{ fontWeight: 'bold' }}>Wash preference:</Text> {modalItem?.washingPref}</Text>
+                                alignSelf: 'center',}}><Text style={{ fontWeight: 'bold' }}>Clean preference:</Text> {modalItem?.cleaningPref?.label}</Text>
                         
                         <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
                           <DateTimePickerModal
@@ -371,6 +521,57 @@ function Aphi({ navigation }) {
                     </>
                 </View>
             </Modal>
+            <Modal isVisible={isUploadVisible}>
+              < KeyboardAvoidingView
+                behavior="padding" 
+                style={styles.uploadbackground}>
+                <ScrollView Vertical={true} showsVerticalScrollIndicator={false} style = {{ width: '100%'}} nestedScrollEnabled={true}>
+                  <Pressable style= {styles.uploadbutton} onPress={pickImage}>
+                    <Text style={styles.uploadbuttonText}>upload an image from camera roll</Text>
+                  </Pressable>
+                {image && <Image source={{ uri: image }} style={{ width: 200, height: 200, alignSelf: 'center', marginBottom:20}} />}
+                <View style={{width: '100%', justifyContent: 'center', alignItems : 'center'}}>
+                <MultipleSelectList 
+                        setSelected={(val) => setSelectedTags(val)} 
+                        data={categories} 
+                        save="value"
+                        label="Categories"
+                        placeholder='select clothing type'
+                  />
+                  </View>
+                    <TextInput
+                    style={styles.uploadinput}
+                    placeholder="item brand"
+                    placeholderTextColor="#5A5A5A"
+                    onChangeText={setBrand}
+                    value={brand}
+                    />
+                    <TextInput
+                    style={styles.uploadinput}
+                    placeholder="item size"
+                    placeholderTextColor="#5A5A5A"
+                    onChangeText={setSize}
+                    value={size}
+                  />
+                <DropDownPicker style= {styles.uploadinput}
+                    open={typeOpen}
+                    value={cleaningPref}
+                    items={typeItems}
+                    setOpen={setTypeOpen}
+                    setItems={setTypeItems}
+                    setValue={setCleaningPref}
+                    placeholder="cleaning preference"
+                    listMode="SCROLLVIEW"
+                  />
+                  <Pressable style= {styles.uploadbutton} onPress={handleUpload}>
+                    <Text style={styles.uploadbuttonText}>upload</Text>
+                  </Pressable>
+                  <Pressable style= {styles.uploadbutton} onPress={handleUploadVisible}>
+                    <Text style={styles.uploadbuttonText}>cancel</Text>
+                  </Pressable>
+                    </ScrollView>
+                    </KeyboardAvoidingView>
+            </Modal>
             <MasonryList
                 data={clothes}
                 renderItem={({item}) => {
@@ -396,7 +597,7 @@ function Aphi({ navigation }) {
             icon={{ name: 'add', color: 'white' }}
             color="#e8def9"
             placement="right"
-            onPress={() => navigation.navigate('Upload', {group: group})}
+            onPress={handleUploadVisible}
         />
         </SafeAreaView>
     )
@@ -450,9 +651,6 @@ button: {
  buttonText: {
   color:'#5A5A5A', 
  },
-modalRequestButton: {
-
-},
 TouchableOpacityStyle:{
 
     position: 'absolute',
@@ -511,15 +709,49 @@ TouchableOpacityStyle:{
     textAlign: 'center',
   },
   filterButton: {
-    backgroundColor:'white',
+    backgroundColor:'transparent',
     padding:5,
     margin:5
   },
 
   filterText: {
-    fontSize: 14,
+    fontSize: 15,
     lineHeight: 21,
     letterSpacing: 0.25,
     color: '#5A5A5A',
   },
+  uploadinput: {
+    height: 40,
+    width: '80%',
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 15,
+    alignSelf: 'center',
+    backgroundColor:  '#f7f4fd', 
+  },
+  uploadbutton: {
+    backgroundColor:  '#e8def9', 
+    borderColor: '#f5dceb',
+    marginBottom: 20,
+    width: '50%',
+    borderWidth: 0,
+    borderRadius: 15,       
+    alignSelf: 'center',
+    margin: 12,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center'
+ },
+ uplaodbuttonText: {
+  color:'#5A5A5A', 
+ },
+uploadbackground: {
+  height: '85%',
+  backgroundColor: '#f7f4fd',
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderRadius:10
+ }
 });

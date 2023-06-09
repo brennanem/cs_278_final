@@ -9,11 +9,11 @@ import { CheckBox } from 'react-native-elements'
 import {Stars} from 'react-native-stars';
 import { SelectList } from 'react-native-dropdown-select-list'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { db , storage, getDoc, doc, addDoc, setDoc , updateDoc, collection, getCountFromServer} from "../firebase/firebaseConfig";
+import { db , storage, getDoc, doc, addDoc, setDoc , updateDoc, ref, collection, getCountFromServer, getDownloadURL} from "../firebase/firebaseConfig";
 
 
 
-const allClothes = [
+let allClothes = [
   { source: require("../clothes_images/yellowbralette.jpeg"),
       id: '8',
       text: 'FreePeople (S)' },
@@ -29,13 +29,15 @@ const allClothes = [
 
 ];
 
-const beingBorrowed = [
+let full_beingBorrowed = [
   { source: require("../clothes_images/denimtop.jpeg"),
       width: 160,
       height: 210,
       id: '9',
       i: 8,
-      text: 'Amazon (S)' }
+      text: 'Amazon (S)',
+      user: 'Kathryn',
+      userIcon: require("../icons/kathpic.png") }
 ];
 
 const borrowing = [
@@ -67,13 +69,15 @@ const halfStar = require('../icons/starHalf.png');
 const emptyStar = require('../icons/starEmpty.png')
 
 function Profile({ navigation }) {
+  const borrowed = full_beingBorrowed.map((item) => {return item});
+  const my_clothes = allClothes.map((item) => {return item});
   const [stars, setStars] = React.useState([filledStar, filledStar, halfStar, emptyStar, emptyStar]);
 
   const [isDeleteModalVisible, setIsDeleteModalVisible] = React.useState(false);
   const [modalItemDelete, setModalItemDelete] = React.useState(null);
   const [isReturnModalVisible, setIsReturnModalVisible] = React.useState(false);
   const [modalItemReturn, setModalItemReturn] = React.useState(null);
-  const handleReturnModal = () => {setIsReturnModalVisible(!isReturnModalVisible);};
+  
   const handleDeleteModal = () => {setIsDeleteModalVisible(!isDeleteModalVisible);};
   const [isReturnChecked, setIsReturnChecked] = React.useState(false);
   const handleReturnChecked = () => {setIsReturnChecked(!isReturnChecked);};
@@ -83,81 +87,150 @@ function Profile({ navigation }) {
   const [reportReason, setReportReason] = React.useState(null);
   const [reportComment, setReportComment] = React.useState(null);
   const handleReportModal = () => {setIsReportModalVisible(!isReportModalVisible);};
-  const [notificationIcon, setNotificationIcon] = useState(require("../icons/notificationoutline.png"));
+  const [notificationIcon, setNotificationIcon] = useState(require("../icons/newnotificationoutline.png"));
   // const [notifications, setNotifications] = useState(null);
+  const [myCloset, setMyCloset] = useState(my_clothes);
+  // const [borrowing, setBorrowing] = useState([]);
+  const [beingBorrowed, setBeingBorrowed] = useState(borrowed);
 
-  const uid = getAuth().currentUser
+  const uid = getAuth().currentUser.uid
 
   const handleDeleteChecked = () => {setIsDeleteChecked(!isDeleteChecked);};
 
-  var allClothes = [
-    { source: require("../clothes_images/yellowbralette.jpeg"),
-        id: '8',
-        text: 'FreePeople (S)' },
-    { source: require("../clothes_images/denimtop.jpeg"),
-        id: '9',
-        text: 'Amazon (S)' },
-    { source: require("../clothes_images/blackstrappydress.jpeg"),
-        id: '10',
-        text: 'TigerMist (S)' }, 
-    { source: require("../clothes_images/pinkscarftop.jpeg"),
-        id: '11',
-        text: 'TigerMist (S)' }, 
+  const handleReturnModal = () => {
+    setIsReturnModalVisible(!isReturnModalVisible);
+  };
 
-  ];
-
-  var beingBorrowed = [
-      { source: require("../clothes_images/denimtop.jpeg"),
-          width: 160,
-          height: 210,
-          id: '9',
-          i: 8,
-          text: 'Amazon (S)',
-        user: 'Christine',
-        userIcon: require("../icons/accounticon.png") }
-  ];
-
-  // let notificationIc =
-  // const coll = collection(db, "cities");
-  // const snapshot = await getCountFromServer(coll);
-  // console.log('count: ', snapshot.data().count);
-  const getNotifications = async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (user) {
-      const uid = user.uid;
-      console.log(uid)
-      const snapshot = await getCountFromServer(collection(db, "users", uid, 'requests'));
-      if (snapshot.data().count > 0) {
-        setNotificationIcon(require('../icons/newnotificationoutline.png'));
-      }
-      // const userRef = doc(db, "users", uid);
-      // console.log("ref", userRef)
-      // const userDoc = await getDoc(userRef);
-      // // console.log("doc", userDoc.data())
-      // if (userDoc.exists()) {
-      //   const notifs = userDoc.get("requests").reverse();
-      //   if (notifs) {
-      //     console.log("notifs", notifs)
-      //     setNotificationIcon(require('../icons/newnotificationoutline.png'));
-      //     setNotifications(notifs);
-      //   } 
-      // } else {
-      //   console.log("No such document!");
-      // }
-    } else {
-      console.log("user not signed in");
-    }  
+  const handleReturnDone = () => {
+    if (isReturnChecked) {
+      setBeingBorrowed([]);
+      full_beingBorrowed = [];
+    }
+    setIsReturnModalVisible(!isReturnModalVisible)
+  }
+  const handleDeleteDone = () => {
+    if (isDeleteChecked) {
+      const newClothes = allClothes.filter((item) => {
+        return item.id !== modalItemDelete.id;
+      })
+      setMyCloset(newClothes);
+      allClothes = newClothes;
+    }
+    setIsDeleteModalVisible(!isDeleteModalVisible)
   }
 
+  // var allClothes = [
+  //   { source: require("../clothes_images/yellowbralette.jpeg"),
+  //       id: '8',
+  //       text: 'FreePeople (S)' },
+  //   { source: require("../clothes_images/denimtop.jpeg"),
+  //       id: '9',
+  //       text: 'Amazon (S)' },
+  //   { source: require("../clothes_images/blackstrappydress.jpeg"),
+  //       id: '10',
+  //       text: 'TigerMist (S)' }, 
+  //   { source: require("../clothes_images/pinkscarftop.jpeg"),
+  //       id: '11',
+  //       text: 'TigerMist (S)' }, 
+
+  // ];
+
+  // var beingBorrowed = [
+  //     { source: require("../clothes_images/denimtop.jpeg"),
+  //         width: 160,
+  //         height: 210,
+  //         id: '9',
+  //         i: 8,
+  //         text: 'Amazon (S)',
+  //       user: 'Christine',
+  //       userIcon: require("../icons/accounticon.png") }
+  // ];
 
 
-  useEffect( () => {
-    // updateClothes();
-    getNotifications();
-  }, []);
+  // const parsePosts = (items) => {
+  //   const newItems = items.map( async (item) => {
+  //     const postPath = item.split("/");
+  //     const postDoc = await getDoc(doc(db, "groups", postPath[1], "posts", postPath[3]))
+  //     const postImagePath = postDoc.get("imagePath");
+  //     const itemUrl = await getDownloadURL(ref(storage, postImagePath));
+  //     return {
+  //       id: postDoc.id,
+  //       source : { uri: itemUrl},
+  //     }
+  //   });
+  //   return newItems;
+  // }
 
-  // console.log('notificatios', notifications);
+  // const parseBeingBorrowed = (items) => {
+  //   const newItems = items.map( async (item) => {
+  //     const postPath = item.post.path.split("/");
+  //     const postDoc = await getDoc(doc(db, "groups", postPath[1], "posts", postPath[3]));
+  //     const postImagePath = postDoc.get("imagePath");
+  //     const itemUrl = await getDownloadURL(ref(storage, postImagePath));
+  //     const borrowedByPath = item.borrowedBy.path.split("/");
+  //     const borrowerDoc = await getDoc(doc(db, "users", borrowedByPath[1]));
+  //     const borrowerName = borrowerDoc.get("name");
+  //     const borrowerIconPath = borrowerDoc.get("profilePicPath");
+  //     return {
+  //       id: postDoc.id,
+  //       source : { uri: itemUrl},
+  //       borrowedBy : item.borrowedBy.path,
+  //       borrowedByName : borrowerName,
+  //       borrowedByIcon : borrowerIconPath ? {uri : await getDownloadURL(ref(storage, borrowerIconPath))} : require("../icons/accounticon.png") 
+  //     }
+  //   });
+  //   return newItems;
+  // }
+
+  // const getCloset = async () => {
+  //   const auth = getAuth();
+  //   const user = auth.currentUser;
+  //   if (user) {
+  //     console.log('here!')
+  //     const userDoc = await getDoc(doc(db, "users", uid));
+  //     //get user posts
+  //     const posts = userDoc.get("posts");
+  //     // console.log('here!')
+  //     //get user borrowing
+  //     if (posts) {
+  //       setMyCloset(parsePosts(posts));
+  //     }
+  //     const borrowing = userDoc.get("borrowing");
+  //     if (borrowing) {
+  //       setMyCloset(parsePosts(borrowing));
+  //     }
+  //     //bet user being borrowed
+  //     const beingBorrowed = userDoc.get("beingBorrowed");
+  //     if (beingBorrowed) {
+  //       setMyCloset(parseBeingBorrowed(beingBorrowed));
+  //     }
+  //   } else {
+  //     console.log("user not signed in");
+  //   }  
+  // }
+
+  // const getNotifications = async () => {
+  //   const auth = getAuth();
+  //   const user = auth.currentUser;
+  //   if (user) {
+  //     const uid = user.uid;
+  //     console.log(uid)
+  //     const snapshot = await getCountFromServer(collection(db, "users", uid, 'requests'));
+  //     if (snapshot.data().count > 0) {
+  //       setNotificationIcon(require('../icons/newnotificationoutline.png'));
+  //     }
+  //   } else {
+  //     console.log("user not signed in");
+  //   }  
+  // }
+
+
+
+  // useEffect( () => {
+  //   getNotifications();
+  //   getCloset();
+  // }, []);
+
 
   const handleStar = (num) => {
     console.log(numStars);
@@ -197,183 +270,164 @@ function Profile({ navigation }) {
 
   return(
     <View style={styles.container}>
-      {!uid && <Text>Please sign in to view profile</Text>}
-      {uid && <View style={styles.container}>
-      <View style={styles.header}>
-      <Pressable style={styles.notificationContainer} onPress={() => navigation.navigate('RequestNotifications')}>
-            <Image source={notificationIcon} style={{height:27, width:23}}/>
-      </Pressable>
-        <View style={styles.headerContent}>
-          <Image style={styles.avatar} source={require("../icons/accounticon.png")}/>
-          <Text style={styles.name}>Brennan Megregian</Text>
-          <View style={styles.statsContainer}>
-            <View style={styles.statsBox}>
-              <Text style={styles.statsCount}>{4}</Text>
-              <Text style={styles.statsLabel}>Items</Text>
-            </View>
-            <View style={styles.statsBox}>
-              <Text style={styles.statsCount}>{1}</Text>
-              <Text style={styles.statsLabel}>Borrowed</Text>
-            </View>
-            <View style={styles.statsBox}>
-              <Text style={styles.statsCount}>{2}</Text>
-              <Text style={styles.statsLabel}>Borrowing</Text>
-            </View>
+    <View style={styles.header}>
+    <Pressable style={styles.notificationContainer} onPress={() => navigation.navigate('RequestNotifications')}>
+          <Image source={require('../icons/newnotificationoutline.png')} style={{height:27, width:23}}/>
+    </Pressable>
+      <View style={styles.headerContent}>
+        <Image style={styles.avatar} source={require("../icons/brennanpic.png")}/>
+        <Text style={styles.name}>Brennan Megregian</Text>
+        <View style={styles.ratingContainer}>
+            <Image
+            source={require("../icons/star.png")}
+            style={{width: 17, height: 17}}
+            /> 
+            <Text style={{fontSize: 17, color: '#5A5A5A'}}>{4.95}</Text>                   
+        </View>
+        <View style={styles.statsContainer}>
+          <View style={styles.statsBox}>
+            <Text style={styles.statsCount}>{myCloset.length}</Text>
+            <Text style={styles.statsLabel}>Items</Text>
+          </View>
+          <View style={styles.statsBox}>
+            <Text style={styles.statsCount}>{beingBorrowed.length}</Text>
+            <Text style={styles.statsLabel}>Borrowed</Text>
+          </View>
+          <View style={styles.statsBox}>
+            <Text style={styles.statsCount}>{2}</Text>
+            <Text style={styles.statsLabel}>Borrowing</Text>
           </View>
         </View>
       </View>
-      <Modal isVisible={isReturnModalVisible}>
-              <View style={styles.returnModalStyle}>
-                  <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={handleReturnModal}>
-                      <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
-                    </Pressable>
-                  <View style={styles.modalTextContainer}>
-                  <Text style={{fontSize: 19, color: '#5A5A5A'}}>this item is being borrowed by</Text>
+    </View>
+    <Modal isVisible={isReturnModalVisible}>
+            <View style={styles.returnModalStyle}>
+                <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={handleReturnModal}>
+                    <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
+                  </Pressable>
+                <View style={styles.modalTextContainer}>
+                <Text style={{fontSize: 19, color: '#5A5A5A'}}>this item is being borrowed by</Text>
+                </View>
+                <View style={styles.modalIconContainer}>
+                <Image
+                source={modalItemReturn?.userIcon}
+                style={{width:100,height:100}}
+                />
+                </View>
+                <View style={styles.modalIconContainer}>
+                <Text style={{fontSize: 22, color: '#5A5A5A'}}>{modalItemReturn?.user}</Text>
+                </View>
+                <View style={styles.modalTextContainer}>
+                <Text style={{marginVertical: 5, fontSize: 17, color: '#5A5A5A', textAlign: 'center'}}>{"rate your experience with ".concat(modalItemReturn?.user)}</Text>
+                </View>
+                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10}}>
+                     <Pressable onPress={() => {handleStar(0);}}>
+                       <Image style={{height: 40, width: 40}} source={stars[0]}/>
+                     </Pressable>
+                     <Pressable onPress={() => {handleStar(1);}}>
+                       <Image style={{height: 40, width: 40}} source={stars[1]}/>
+                     </Pressable>
+                     <Pressable onPress={() => {handleStar(2);}}>
+                     <Image style={{height: 40, width: 40}} source={stars[2]}/>
+                     </Pressable>
+                     <Pressable onPress={() => {handleStar(3);}}>
+                       <Image style={{height: 40, width: 40}} source={stars[3]}/>
+                     </Pressable>
+                     <Pressable onPress={() => {handleStar(4);}}>
+                       <Image style={{height: 40, width: 40}} source={stars[4]}/>
+                     </Pressable>
                   </View>
-                  <View style={styles.modalIconContainer}>
-                  <Image
-                  source={modalItemReturn?.userIcon}
-                  style={{width:100,height:100}}
+                <View>
+                <CheckBox
+                    center
+                    title='mark item as returned'
+                    iconRight
+                    checkedIcon={<Image source={require('../icons/checked.png')} style={{height:20, width:20}}/>}
+                    uncheckedIcon={<Image source={require('../icons/unchecked.png')} style={{height:20, width:20}}/>}
+                    checked={isReturnChecked}
+                    onPress={handleReturnChecked}
+                    textStyle={{fontSize: 15, lineHeight: 21, letterSpacing: 0.25, color: '#5A5A5A'}}
+                    containerStyle = {styles.modalIconContainer}
+                  />
+                </View>
+                <View style={{flexDirection: 'row', gap:'90%'}}>
+                  <Pressable style={styles.modalTextContainer} onPress={() => {handleReportModal();}}>
+                <Text style={{marginVertical: 5, fontSize: 17, color: '#e60000', textAlign: 'center'}}>report user</Text>
+                </Pressable>
+                <Pressable style={styles.doneContainer} onPress={handleReturnDone}>
+                <Text style={{marginVertical: 5, fontSize: 17, color: '#5A5A5A', textAlign: 'center'}}>done</Text>
+                </Pressable>
+                </View>
+            </View>
+            <Modal isVisible={isReportModalVisible}>
+            <View style={styles.reportModalStyle}>
+                <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={() => {handleReportModal();}}>
+                    <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
+                  </Pressable>
+                  <View style={styles.modalTextContainer}>
+                    <Text style={{fontSize: 19, color: '#5A5A5A'}}>what would you like to report?</Text>
+                  </View>
+                  <View style={styles.modalTextContainer}>
+                  <SelectList 
+                    setSelected={(val) => setReportReason(val)} 
+                    data={reportOptions} 
+                    save="value"
+                    placeholder="select reason for report"
+                    search={false}
                   />
                   </View>
-                  <View style={styles.modalIconContainer}>
-                  <Text style={{fontSize: 22, color: '#5A5A5A'}}>{modalItemReturn?.user}</Text>
-                  </View>
                   <View style={styles.modalTextContainer}>
-                  <Text style={{marginVertical: 5, fontSize: 17, color: '#5A5A5A', textAlign: 'center'}}>{"rate your experience with ".concat(modalItemReturn?.user)}</Text>
-                  </View>
-                  <View style={{alignItems:'center'}}>
-                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10}}>
-                      <Pressable onPress={() => {handleStar(0);}}>
-                        <Image style={{height: 40, width: 40}} source={stars[0]}/>
-                      </Pressable>
-                      <Pressable onPress={() => {handleStar(1);}}>
-                        <Image style={{height: 40, width: 40}} source={stars[1]}/>
-                      </Pressable>
-                      <Pressable onPress={() => {handleStar(2);}}>
-                        <Image style={{height: 40, width: 40}} source={stars[2]}/>
-                      </Pressable>
-                      <Pressable onPress={() => {handleStar(3);}}>
-                        <Image style={{height: 40, width: 40}} source={stars[3]}/>
-                      </Pressable>
-                      <Pressable onPress={() => {handleStar(4);}}>
-                        <Image style={{height: 40, width: 40}} source={stars[4]}/>
-                      </Pressable>
-                    </View>
-                  </View>
-                  <View>
-                  <CheckBox
-                      center
-                      title='mark item as returned'
-                      iconRight
-                      checkedIcon={<Image source={require('../icons/checked.png')} style={{height:20, width:20}}/>}
-                      uncheckedIcon={<Image source={require('../icons/unchecked.png')} style={{height:20, width:20}}/>}
-                      checked={isReturnChecked}
-                      onPress={handleReturnChecked}
-                      textStyle={{fontSize: 15, lineHeight: 21, letterSpacing: 0.25, color: '#5A5A5A'}}
-                      containerStyle = {styles.modalIconContainer}
-                    />
-                  </View>
-                  <View style={{flexDirection: 'row', gap:'90%'}}>
-                    <Pressable style={styles.modalTextContainer} onPress={handleReportModal}>
-                  <Text style={{marginVertical: 5, fontSize: 17, color: '#e60000', textAlign: 'center'}}>report user</Text>
-                  </Pressable>
-                  <Pressable style={styles.doneContainer} onPress={handleReturnModal}>
-                  <Text style={{marginVertical: 5, fontSize: 17, color: '#5A5A5A', textAlign: 'center'}}>done</Text>
-                  </Pressable>
-                  </View>
-              </View>
-              <Modal isVisible={isReportModalVisible}>
-              <View style={styles.reportModalStyle}>
-                  <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={() => {handleReportModal();}}>
-                      <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
-                    </Pressable>
-                    <View style={styles.modalTextContainer}>
-                      <Text style={{fontSize: 19, color: '#5A5A5A'}}>what would you like to report?</Text>
-                    </View>
-                    <View style={styles.modalTextContainer}>
-                    <SelectList 
-                      setSelected={(val) => setReportReason(val)} 
-                      data={reportOptions} 
-                      save="value"
-                      placeholder="select reason for report"
-                      search={false}
-                    />
-                    </View>
-                    <View style={styles.modalTextContainer}>
-                    <TextInput
-                      style={{height: 100, backgroundColor: 'white', width: '90%', padding:5, borderRadius: 10, borderColor: '#5A5A5A', borderWidth: 1}}
-                      placeholder="(optional) leave a comment to explain"
-                      onChangeText={(val) => {setReportComment(val)}}
-                      value={reportComment}
-                      multiline={true}
-                      numberOfLines={5}
-                      keyboardType="default"
-                      returnKeyType="done"
-                      blurOnSubmit={true}
-                      onSubmitEditing={()=>{Keyboard.dismiss()}}
-                    />
-                    </View>
-                    <Pressable style={styles.modalButtonContainer} onPress={handleReportModal}>
-                      <Text style={{fontSize: 19, color: '#5A5A5A'}}>submit</Text>
-                    </Pressable>
-              </View>
-            </Modal> 
-          </Modal> 
-          <Modal isVisible={isDeleteModalVisible}>
-              <View style={styles.modalStyle}>
-                  <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={handleDeleteModal}>
-                      <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
-                    </Pressable>
-                  <View>
-                  <CheckBox
-                      center
-                      title='Remove item from closet'
-                      iconRight
-                      checkedIcon={<Image source={require('../icons/deletechecked.png')} style={{height:20, width:15}}/>}
-                      uncheckedIcon={<Image source={require('../icons/deleteunchecked.png')} style={{height:20, width:15}}/>}
-                      checked={isDeleteChecked}
-                      onPress={handleDeleteChecked}
-                      textStyle={{fontSize: 15, lineHeight: 21, letterSpacing: 0.25, color: '#5A5A5A'}}
-                      containerStyle ={{backgroundColor: 'transparent', borderColor: 'transparent', paddingTop:'10%', paddingBottom:'10%'}}
-                    />
-                  </View>
-              </View>
-          </Modal> 
-      <ScrollView>
-          <View style={styles.closetContainer}>
-              <Text style={styles.closetHeader}>My Closet</Text>
-              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-              {allClothes.map((item) => (
-                <View key={item.id} style={{marginTop: 12, flex: 1, padding: 5}}>
-                  <Pressable onPress={() => {
-                    setModalItemDelete(item)
-                    handleDeleteModal();
-                    }
-                  }>
-                    <Image
-                    source={item.source}
-                    style={{
-                      height: 120,
-                      alignSelf: 'stretch',
-                      width: 120,
-                      borderRadius: 7,
-                    }}
-                    resizeMode="cover"
+                  <TextInput
+                    style={{height: 100, backgroundColor: 'white', width: '90%', padding:5, borderRadius: 10, borderColor: '#5A5A5A', borderWidth: 1}}
+                    placeholder="(optional) leave a comment to explain"
+                    onChangeText={(val) => {setReportComment(val)}}
+                    value={reportComment}
+                    multiline={true}
+                    numberOfLines={5}
+                    keyboardType="default"
+                    returnKeyType="done"
+                    blurOnSubmit={true}
+                    onSubmitEditing={()=>{Keyboard.dismiss()}}
                   />
+                  </View>
+                  <Pressable style={styles.modalButtonContainer} onPress={handleReportModal}>
+                    <Text style={{fontSize: 19, color: '#5A5A5A'}}>submit</Text>
                   </Pressable>
-                </View>         
-              ))}
-              </ScrollView>
-          </View>
-          <View style={styles.closetContainer}>
-              <Text style={styles.closetHeader}>Borrowed</Text>
-              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-              {beingBorrowed.map((item) => (     
-                <View key={item.id} style={{marginTop: 12, flex: 1, padding: 5}}>
+            </View>
+          </Modal> 
+        </Modal> 
+        <Modal isVisible={isDeleteModalVisible}>
+            <View style={styles.modalStyle}>
+                <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={handleDeleteModal}>
+                    <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
+                  </Pressable>
+                <View>
+                <CheckBox
+                    center
+                    title='Remove item from closet'
+                    iconRight
+                    checkedIcon={<Image source={require('../icons/deletechecked.png')} style={{height:20, width:15}}/>}
+                    uncheckedIcon={<Image source={require('../icons/deleteunchecked.png')} style={{height:20, width:15}}/>}
+                    checked={isDeleteChecked}
+                    onPress={handleDeleteChecked}
+                    textStyle={{fontSize: 15, lineHeight: 21, letterSpacing: 0.25, color: '#5A5A5A'}}
+                    containerStyle ={{backgroundColor: 'transparent', borderColor: 'transparent', paddingTop:'10%', paddingBottom:'10%'}}
+                  />
+                <Pressable style={styles.deleteDoneContainer} onPress={handleDeleteDone}>
+                <Text style={{marginVertical: 5, fontSize: 17, color: '#5A5A5A', textAlign: 'center'}}>done</Text>
+                </Pressable>
+                </View>
+            </View>
+        </Modal> 
+    <ScrollView>
+        <View style={styles.closetContainer}>
+            <Text style={styles.closetHeader}>My Closet</Text>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {myCloset.map((item) => (
+              <View key={item.id} style={{marginTop: 12, flex: 1, padding: 5}}>
                 <Pressable onPress={() => {
-                    setModalItemReturn(item)
-                    handleReturnModal();
+                  setModalItemDelete(item)
+                  handleDeleteModal();
                   }
                 }>
                   <Image
@@ -387,24 +441,49 @@ function Profile({ navigation }) {
                   resizeMode="cover"
                 />
                 </Pressable>
-              </View>     
-              ))}
-              </ScrollView>
-          </View>
-          <View style={styles.closetContainer}>
-              <Text style={styles.closetHeader}>Borrowing</Text>
-              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-              {borrowing.map((item) => (
-                  <View key={item.id} style={styles.imageContainer}>
-                      <Image style={styles.image} source={item.source}/>
-                  </View>            
-              ))}
-              </ScrollView>
-          </View>
-      </ScrollView>
-    </View>}
-    </View>
-  )
+              </View>         
+            ))}
+            </ScrollView>
+        </View>
+        <View style={styles.closetContainer}>
+            <Text style={styles.closetHeader}>Borrowed</Text>
+            {beingBorrowed.length===0 && <Text style={{textAlign: 'center', fontSize:16}}>None of your items are being borrowed at the moment!</Text>}
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {beingBorrowed.map((item) => (     
+              <View key={item.id} style={{marginTop: 12, flex: 1, padding: 5}}>
+              <Pressable onPress={() => {
+                  setModalItemReturn(item)
+                  handleReturnModal();
+                }
+              }>
+                <Image
+                source={item.source}
+                style={{
+                  height: 120,
+                  alignSelf: 'stretch',
+                  width: 120,
+                  borderRadius: 7,
+                }}
+                resizeMode="cover"
+              />
+              </Pressable>
+            </View>     
+            ))}
+            </ScrollView>
+        </View>
+        <View style={styles.closetContainer}>
+            <Text style={styles.closetHeader}>Borrowing</Text>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {borrowing.map((item) => (
+                <View key={item.id} style={styles.imageContainer}>
+                    <Image style={styles.image} source={item.source}/>
+                </View>            
+            ))}
+            </ScrollView>
+        </View>
+    </ScrollView>
+  </View>
+)
 }
 
 export default Profile;
@@ -440,7 +519,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flex : 0,
-    height: 300,
+    height: 330,
     flexDirection: 'column',
     gap: 1,
     backgroundColor: 'transparent',
@@ -460,6 +539,20 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center'
   },
+  ratingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+    padding: 5,
+    borderRightWidth: 5,
+    borderRightColor:'#e7deed',
+    borderLeftWidth: 5,
+    borderLeftColor:'#e7deed',
+    gap: 5,
+    backgroundColor: '#e7deed',
+    borderRadius: 15,
+    marginTop: 10
+},
   avatar: {
     width: 130,
     height: 130,
@@ -515,11 +608,13 @@ const styles = StyleSheet.create({
       paddingBottom: 10
   },
   modalStyle: {
-    height: '20%',
+    height: '25%',
     width: '95%',
     alignSelf: 'center',
     backgroundColor: '#f3eef6',
     borderRadius: 15,
+    alignItems: 'center',
+    flexDirection: 'column',
 },
 returnModalStyle: {
   height: '65%',
@@ -579,6 +674,46 @@ doneContainer: {
   borderRadius: 15, 
   width:100
 }, 
+deleteDoneContainer: {
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 5,
+  marginHorizontal: 7,
+  backgroundColor: '#e7deed',
+  borderRadius: 15, 
+  width:100,
+  marginLeft:80
+}, 
+input: {
+  height: 40,
+  width: '80%',
+  margin: 12,
+  borderWidth: 1,
+  padding: 10,
+  borderRadius: 15,
+  alignSelf: 'center',
+  backgroundColor:  '#f7f4fd', 
+},
+button: {
+  backgroundColor:  '#e8def9', 
+  borderColor: '#f5dceb',
+  marginBottom: 20,
+  width: '50%',
+  borderWidth: 0,
+  borderRadius: 15,       
+  alignSelf: 'center',
+  margin: 12,
+  padding: 10,
+},
+buttonText: {
+color:'#5A5A5A', 
+},
+background: {
+height: '100%',
+backgroundColor: '#f7f4fd',
+justifyContent: 'center',
+alignItems: 'center',
+}
 });
 
 // // const auth = getAuth();
@@ -702,208 +837,7 @@ doneContainer: {
 //       userIcon: require("../icons/accounticon.png") }
 // ];
 
-//     return(
-//         <View style={styles.container}>
-//         <View style={styles.header}>
-//         <Pressable style={styles.notificationContainer} onPress={() => navigation.navigate('RequestNotifications')}>
-//               <Image source={require('../icons/notificationoutline.png')} style={{height:27, width:23}}/>
-//         </Pressable>
-//           <View style={styles.headerContent}>
-//             <Image style={styles.avatar} source={require("../icons/accounticon.png")}/>
-//             <Text style={styles.name}>Brennan Megregian</Text>
-//             <View style={styles.statsContainer}>
-//               <View style={styles.statsBox}>
-//                 <Text style={styles.statsCount}>{4}</Text>
-//                 <Text style={styles.statsLabel}>Items</Text>
-//               </View>
-//               <View style={styles.statsBox}>
-//                 <Text style={styles.statsCount}>{1}</Text>
-//                 <Text style={styles.statsLabel}>Borrowed</Text>
-//               </View>
-//               <View style={styles.statsBox}>
-//                 <Text style={styles.statsCount}>{2}</Text>
-//                 <Text style={styles.statsLabel}>Borrowing</Text>
-//               </View>
-//             </View>
-//           </View>
-//         </View>
-//         <Modal isVisible={isReturnModalVisible}>
-//                 <View style={styles.returnModalStyle}>
-//                     <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={handleReturnModal}>
-//                         <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
-//                       </Pressable>
-//                     <View style={styles.modalTextContainer}>
-//                     <Text style={{fontSize: 19, color: '#5A5A5A'}}>this item is being borrowed by</Text>
-//                     </View>
-//                     <View style={styles.modalIconContainer}>
-//                     <Image
-//                     source={modalItemReturn?.userIcon}
-//                     style={{width:100,height:100}}
-//                     />
-//                     </View>
-//                     <View style={styles.modalIconContainer}>
-//                     <Text style={{fontSize: 22, color: '#5A5A5A'}}>{modalItemReturn?.user}</Text>
-//                     </View>
-//                     <View style={styles.modalTextContainer}>
-//                     <Text style={{marginVertical: 5, fontSize: 17, color: '#5A5A5A', textAlign: 'center'}}>{"rate your experience with ".concat(modalItemReturn?.user)}</Text>
-//                     </View>
-//                     <View style={{alignItems:'center'}}>
-//                       <Stars
-//                         half={true}
-//                         default={0}
-//                         update={(val)=>{
-//                           console.log(val)
-//                           setNumStars(val)}}
-//                         spacing={4}
-//                         starSize={40}
-//                         count={5}
-//                         fullStar={require('../icons/starFilled.png')}
-//                         emptyStar={require('../icons/starEmpty.png')}
-//                         halfStar={require('../icons/starHalf.png')}/>
-//                     </View>
-//                     <View>
-//                     <CheckBox
-//                         center
-//                         title='mark item as returned'
-//                         iconRight
-//                         checkedIcon={<Image source={require('../icons/checked.png')} style={{height:20, width:20}}/>}
-//                         uncheckedIcon={<Image source={require('../icons/unchecked.png')} style={{height:20, width:20}}/>}
-//                         checked={isReturnChecked}
-//                         onPress={handleReturnChecked}
-//                         textStyle={{fontSize: 15, lineHeight: 21, letterSpacing: 0.25, color: '#5A5A5A'}}
-//                         containerStyle = {styles.modalIconContainer}
-//                       />
-//                     </View>
-//                     <View style={{flexDirection: 'row', gap:'90%'}}>
-//                       <Pressable style={styles.modalTextContainer} onPress={() => {handleReportModal();}}>
-//                     <Text style={{marginVertical: 5, fontSize: 17, color: '#e60000', textAlign: 'center'}}>report user</Text>
-//                     </Pressable>
-//                     <Pressable style={styles.doneContainer} onPress={() => {handleReturnModal();}}>
-//                     <Text style={{marginVertical: 5, fontSize: 17, color: '#5A5A5A', textAlign: 'center'}}>done</Text>
-//                     </Pressable>
-//                     </View>
-//                 </View>
-//                 <Modal isVisible={isReportModalVisible}>
-//                 <View style={styles.reportModalStyle}>
-//                     <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={() => {handleReportModal();}}>
-//                         <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
-//                       </Pressable>
-//                       <View style={styles.modalTextContainer}>
-//                         <Text style={{fontSize: 19, color: '#5A5A5A'}}>what would you like to report?</Text>
-//                       </View>
-//                       <View style={styles.modalTextContainer}>
-//                       <SelectList 
-//                         setSelected={(val) => setReportReason(val)} 
-//                         data={reportOptions} 
-//                         save="value"
-//                         placeholder="select reason for report"
-//                         search={false}
-//                       />
-//                       </View>
-//                       <View style={styles.modalTextContainer}>
-//                       <TextInput
-//                         style={{height: 100, backgroundColor: 'white', width: '90%', padding:5, borderRadius: 10, borderColor: '#5A5A5A', borderWidth: 1}}
-//                         placeholder="(optional) leave a comment to explain"
-//                         onChangeText={(val) => {setReportComment(val)}}
-//                         value={reportComment}
-//                         multiline={true}
-//                         numberOfLines={5}
-//                         keyboardType="default"
-//                         returnKeyType="done"
-//                         blurOnSubmit={true}
-//                         onSubmitEditing={()=>{Keyboard.dismiss()}}
-//                       />
-//                       </View>
-//                       <Pressable style={styles.modalButtonContainer} onPress={handleReportModal}>
-//                         <Text style={{fontSize: 19, color: '#5A5A5A'}}>submit</Text>
-//                       </Pressable>
-//                 </View>
-//               </Modal> 
-//             </Modal> 
-//             <Modal isVisible={isDeleteModalVisible}>
-//                 <View style={styles.modalStyle}>
-//                     <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={handleDeleteModal}>
-//                         <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
-//                       </Pressable>
-//                     <View>
-//                     <CheckBox
-//                         center
-//                         title='Remove item from closet'
-//                         iconRight
-//                         checkedIcon={<Image source={require('../icons/deletechecked.png')} style={{height:20, width:15}}/>}
-//                         uncheckedIcon={<Image source={require('../icons/deleteunchecked.png')} style={{height:20, width:15}}/>}
-//                         checked={isDeleteChecked}
-//                         onPress={handleDeleteChecked}
-//                         textStyle={{fontSize: 15, lineHeight: 21, letterSpacing: 0.25, color: '#5A5A5A'}}
-//                         containerStyle ={{backgroundColor: 'transparent', borderColor: 'transparent', paddingTop:'10%', paddingBottom:'10%'}}
-//                       />
-//                     </View>
-//                 </View>
-//             </Modal> 
-//         <ScrollView>
-//             <View style={styles.closetContainer}>
-//                 <Text style={styles.closetHeader}>My Closet</Text>
-//                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-//                 {allClothes.map((item) => (
-//                   <View key={item.id} style={{marginTop: 12, flex: 1, padding: 5}}>
-//                     <Pressable onPress={() => {
-//                       setModalItemDelete(item)
-//                       handleDeleteModal();
-//                       }
-//                     }>
-//                       <Image
-//                       source={item.source}
-//                       style={{
-//                         height: 120,
-//                         alignSelf: 'stretch',
-//                         width: 120,
-//                         borderRadius: 7,
-//                       }}
-//                       resizeMode="cover"
-//                     />
-//                     </Pressable>
-//                   </View>         
-//                 ))}
-//                 </ScrollView>
-//             </View>
-//             <View style={styles.closetContainer}>
-//                 <Text style={styles.closetHeader}>Borrowed</Text>
-//                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-//                 {beingBorrowed.map((item) => (     
-//                   <View key={item.id} style={{marginTop: 12, flex: 1, padding: 5}}>
-//                   <Pressable onPress={() => {
-//                       setModalItemReturn(item)
-//                       handleReturnModal();
-//                     }
-//                   }>
-//                     <Image
-//                     source={item.source}
-//                     style={{
-//                       height: 120,
-//                       alignSelf: 'stretch',
-//                       width: 120,
-//                       borderRadius: 7,
-//                     }}
-//                     resizeMode="cover"
-//                   />
-//                   </Pressable>
-//                 </View>     
-//                 ))}
-//                 </ScrollView>
-//             </View>
-//             <View style={styles.closetContainer}>
-//                 <Text style={styles.closetHeader}>Borrowing</Text>
-//                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-//                 {borrowing.map((item) => (
-//                     <View key={item.id} style={styles.imageContainer}>
-//                         <Image style={styles.image} source={item.source}/>
-//                     </View>            
-//                 ))}
-//                 </ScrollView>
-//             </View>
-//         </ScrollView>
-//       </View>
-//     )
+
 // }
 
 // export default Profile;
@@ -1086,3 +1020,215 @@ doneContainer: {
 //     width:100
 //   }, 
 //   });
+
+
+// (
+//   <View style={styles.container}>
+//     {!uid && <Text>Please sign in to view profile</Text>}
+//     {uid && <View style={styles.container}>
+//     <View style={styles.header}>
+//     <Pressable style={styles.notificationContainer} onPress={() => navigation.navigate('RequestNotifications')}>
+//           <Image source={notificationIcon} style={{height:27, width:23}}/>
+//     </Pressable>
+//       <View style={styles.headerContent}>
+//         <Image style={styles.avatar} source={require("../icons/accounticon.png")}/>
+//         <Text style={styles.name}>Brennan Megregian</Text>
+//         <View style={styles.statsContainer}>
+//           <View style={styles.statsBox}>
+//             <Text style={styles.statsCount}>{myCloset.length}</Text>
+//             <Text style={styles.statsLabel}>Items</Text>
+//           </View>
+//           <View style={styles.statsBox}>
+//             <Text style={styles.statsCount}>{beingBorrowed.length}</Text>
+//             <Text style={styles.statsLabel}>Borrowed</Text>
+//           </View>
+//           <View style={styles.statsBox}>
+//             <Text style={styles.statsCount}>{borrowing.length}</Text>
+//             <Text style={styles.statsLabel}>Borrowing</Text>
+//           </View>
+//         </View>
+//       </View>
+//     </View>
+//     <Modal isVisible={isReturnModalVisible}>
+//             <View style={styles.returnModalStyle}>
+//                 <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={handleReturnModal}>
+//                     <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
+//                   </Pressable>
+//                 <View style={styles.modalTextContainer}>
+//                 <Text style={{fontSize: 19, color: '#5A5A5A'}}>this item is being borrowed by</Text>
+//                 </View>
+//                 <View style={styles.modalIconContainer}>
+//                 <Image
+//                 source={modalItemReturn?.borrowedByIcon}
+//                 style={{width:100,height:100}}
+//                 />
+//                 </View>
+//                 <View style={styles.modalIconContainer}>
+//                 <Text style={{fontSize: 22, color: '#5A5A5A'}}>{modalItemReturn?.borrowedByName}</Text>
+//                 </View>
+//                 <View style={styles.modalTextContainer}>
+//                 <Text style={{marginVertical: 5, fontSize: 17, color: '#5A5A5A', textAlign: 'center'}}>{"rate your experience with ".concat(modalItemReturn?.borrowedByName)}</Text>
+//                 </View>
+//                 <View style={{alignItems:'center'}}>
+//                   <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10}}>
+//                     <Pressable onPress={() => {handleStar(0);}}>
+//                       <Image style={{height: 40, width: 40}} source={stars[0]}/>
+//                     </Pressable>
+//                     <Pressable onPress={() => {handleStar(1);}}>
+//                       <Image style={{height: 40, width: 40}} source={stars[1]}/>
+//                     </Pressable>
+//                     <Pressable onPress={() => {handleStar(2);}}>
+//                       <Image style={{height: 40, width: 40}} source={stars[2]}/>
+//                     </Pressable>
+//                     <Pressable onPress={() => {handleStar(3);}}>
+//                       <Image style={{height: 40, width: 40}} source={stars[3]}/>
+//                     </Pressable>
+//                     <Pressable onPress={() => {handleStar(4);}}>
+//                       <Image style={{height: 40, width: 40}} source={stars[4]}/>
+//                     </Pressable>
+//                   </View>
+//                 </View>
+//                 <View>
+//                 <CheckBox
+//                     center
+//                     title='mark item as returned'
+//                     iconRight
+//                     checkedIcon={<Image source={require('../icons/checked.png')} style={{height:20, width:20}}/>}
+//                     uncheckedIcon={<Image source={require('../icons/unchecked.png')} style={{height:20, width:20}}/>}
+//                     checked={isReturnChecked}
+//                     onPress={handleReturnChecked}
+//                     textStyle={{fontSize: 15, lineHeight: 21, letterSpacing: 0.25, color: '#5A5A5A'}}
+//                     containerStyle = {styles.modalIconContainer}
+//                   />
+//                 </View>
+//                 <View style={{flexDirection: 'row', gap:'90%'}}>
+//                   <Pressable style={styles.modalTextContainer} onPress={handleReportModal}>
+//                 <Text style={{marginVertical: 5, fontSize: 17, color: '#e60000', textAlign: 'center'}}>report user</Text>
+//                 </Pressable>
+//                 <Pressable style={styles.doneContainer} onPress={handleReturnModal}>
+//                 <Text style={{marginVertical: 5, fontSize: 17, color: '#5A5A5A', textAlign: 'center'}}>submit</Text>
+//                 </Pressable>
+//                 </View>
+//             </View>
+//             <Modal isVisible={isReportModalVisible}>
+//             <View style={styles.reportModalStyle}>
+//                 <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={() => {handleReportModal();}}>
+//                     <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
+//                   </Pressable>
+//                   <View style={styles.modalTextContainer}>
+//                     <Text style={{fontSize: 19, color: '#5A5A5A'}}>what would you like to report?</Text>
+//                   </View>
+//                   <View style={styles.modalTextContainer}>
+//                   <SelectList 
+//                     setSelected={(val) => setReportReason(val)} 
+//                     data={reportOptions} 
+//                     save="value"
+//                     placeholder="select reason for report"
+//                     search={false}
+//                   />
+//                   </View>
+//                   <View style={styles.modalTextContainer}>
+//                   <TextInput
+//                     style={{height: 100, backgroundColor: 'white', width: '90%', padding:5, borderRadius: 10, borderColor: '#5A5A5A', borderWidth: 1}}
+//                     placeholder="(optional) leave a comment to explain"
+//                     onChangeText={(val) => {setReportComment(val)}}
+//                     value={reportComment}
+//                     multiline={true}
+//                     numberOfLines={5}
+//                     keyboardType="default"
+//                     returnKeyType="done"
+//                     blurOnSubmit={true}
+//                     onSubmitEditing={()=>{Keyboard.dismiss()}}
+//                   />
+//                   </View>
+//                   <Pressable style={styles.modalButtonContainer} onPress={handleReportModal}>
+//                     <Text style={{fontSize: 19, color: '#5A5A5A'}}>submit</Text>
+//                   </Pressable>
+//             </View>
+//           </Modal> 
+//         </Modal> 
+//         <Modal isVisible={isDeleteModalVisible}>
+//             <View style={styles.modalStyle}>
+//                 <Pressable style={{paddingLeft: '90%', paddingTop: '3%'}} onPress={handleDeleteModal}>
+//                     <Image source={require('../icons/close.png')} style={{height:20, width:20}}/>
+//                   </Pressable>
+//                 <View>
+//                 <CheckBox
+//                     center
+//                     title='Remove item from closet'
+//                     iconRight
+//                     checkedIcon={<Image source={require('../icons/deletechecked.png')} style={{height:20, width:15}}/>}
+//                     uncheckedIcon={<Image source={require('../icons/deleteunchecked.png')} style={{height:20, width:15}}/>}
+//                     checked={isDeleteChecked}
+//                     onPress={handleDeleteChecked}
+//                     textStyle={{fontSize: 15, lineHeight: 21, letterSpacing: 0.25, color: '#5A5A5A'}}
+//                     containerStyle ={{backgroundColor: 'transparent', borderColor: 'transparent', paddingTop:'10%', paddingBottom:'10%'}}
+//                   />
+//                 </View>
+//             </View>
+//         </Modal> 
+//     <ScrollView>
+//         <View style={styles.closetContainer}>
+//             <Text style={styles.closetHeader}>My Closet</Text>
+//             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+//             {myCloset.map((item) => (
+//               <View key={item.id} style={{marginTop: 12, flex: 1, padding: 5}}>
+//                 <Pressable onPress={() => {
+//                   setModalItemDelete(item)
+//                   handleDeleteModal();
+//                   }
+//                 }>
+//                   <Image
+//                   source={item.source}
+//                   style={{
+//                     height: 120,
+//                     alignSelf: 'stretch',
+//                     width: 120,
+//                     borderRadius: 7,
+//                   }}
+//                   resizeMode="cover"
+//                 />
+//                 </Pressable>
+//               </View>         
+//             ))}
+//             </ScrollView>
+//         </View>
+//         <View style={styles.closetContainer}>
+//             <Text style={styles.closetHeader}>Borrowed</Text>
+//             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+//             {beingBorrowed.map((item) => (     
+//               <View key={item.id} style={{marginTop: 12, flex: 1, padding: 5}}>
+//               <Pressable onPress={() => {
+//                   setModalItemReturn(item)
+//                   handleReturnModal();
+//                 }
+//               }>
+//                 <Image
+//                 source={item.source}
+//                 style={{
+//                   height: 120,
+//                   alignSelf: 'stretch',
+//                   width: 120,
+//                   borderRadius: 7,
+//                 }}
+//                 resizeMode="cover"
+//               />
+//               </Pressable>
+//             </View>     
+//             ))}
+//             </ScrollView>
+//         </View>
+//         <View style={styles.closetContainer}>
+//             <Text style={styles.closetHeader}>Borrowing</Text>
+//             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+//             {borrowing.map((item) => (
+//                 <View key={item.id} style={styles.imageContainer}>
+//                     <Image style={styles.image} source={item.source}/>
+//                 </View>            
+//             ))}
+//             </ScrollView>
+//         </View>
+//     </ScrollView>
+//   </View>}
+//   </View>
+// )

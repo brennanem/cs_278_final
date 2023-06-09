@@ -21,13 +21,13 @@ function Explore({ navigation }) {
             <Drawer.Screen name="Aphi" component={Aphi} />
             <Drawer.Screen name="Formals" component={Formals} />
             <Drawer.Screen name="Create A New Group" component={NewGroup} />
-            <Drawer.Screen name="Upload" component={Upload}
+            {/* <Drawer.Screen name="Upload" component={Upload}
                 // options={{
                 //      () => (
                 //        <AddCircleOutlineIcon/>
                 //     ),
                 // }}
-            />
+            /> */}
         </Drawer.Navigator>
       </NavigationContainer>
     )
