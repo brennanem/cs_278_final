@@ -18,7 +18,7 @@ function Home({ route, navigation }) {
         <Tab.Navigator initialRouteName='Explore'>
             <Tab.Screen 
                 name="DMs" 
-                component={DMing}
+                component={DMs}
                 options={{
                     title: 'DMs',
                     tabBarIcon: ({size,focused,color}) => {

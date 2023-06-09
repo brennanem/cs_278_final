@@ -6,9 +6,10 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import DMpage from './DMpage';
 import DMing from './DMing';
-import { db } from "../firebase/firebaseConfig";
+import { FlatList } from 'react-native-gesture-handler';
+import { db, collection, getDocs} from "../firebase/firebaseConfig";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-// TO-DO: CHANGE DRAWERS TO DM CONVOS (AKA PPLS NAMES)
 
 function DMs({ navigation }) {
 
@@ -19,14 +20,13 @@ function DMs({ navigation }) {
     // // listen to data using react hook
     // const [messages] = useCollectionData(query, {idfield: 'id'});
 
-    const Drawer = createDrawerNavigator();
+    const Stack = createNativeStackNavigator();
+
     return(
-        <NavigationContainer independent={true}>
-            <Drawer.Navigator>
-            <Drawer.Screen name="Kathryn" component={DMing} />
-            <Drawer.Screen name="Christine" component={DMing} />
-        </Drawer.Navigator>
-      </NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Messages" component={DMpage} />
+        <Stack.Screen name='DMing' component={DMing} options={({route}) => ({title:route.params.userName})}/>
+      </Stack.Navigator>
     )
 }
 

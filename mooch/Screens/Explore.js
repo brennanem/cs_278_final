@@ -3,7 +3,7 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 import * as React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
-import Formals from './formals';
+import Formals from './Formals';
 import Aphi from './aphi';
 import ExplorePage from './ExplorePage';
 import NewGroup from './NewGroup';
